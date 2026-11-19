@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MISI WARGA NEGARA - Pendidikan Pancasila Kelas X SMA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tone.js untuk efek suara interaktif tanpa file eksternal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Canvas Confetti untuk perayaan -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            900: '#0A192F',
+                            800: '#112240',
+                            700: '#1D3557',
+                        },
+                        electric: {
+                            500: '#2563EB',
+                            400: '#3B82F6',
+                            100: '#DBEAFE',
+                        },
+                        gold: {
+                            500: '#F59E0B',
+                            400: '#FBBF24',
+                            100: '#FEF3C7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F0F4F8;
+            color: #0F172A;
+            overflow-x: hidden;
+            user-select: none; /* Mencegah seleksi teks tidak sengaja saat sentuh layar IFP */
+        }
+
+        /* Animasi Transisi Halaman */
+        .page-section {
+            display: none;
+            animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efek Kartu & Tombol Sentuh Besar (IFP Friendly) */
+        .btn-touch {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-touch:active {
+            transform: scale(0.96);
+        }
+
+        .card-hover {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(10, 25, 47, 0.1), 0 8px 10px -6px rgba(10, 25, 47, 0.1);
+        }
+
+        /* Animasi Jungkat-Jungkit Keseimbangan Hak & Kewajiban */
+        @keyframes balanceSeeSaw {
+            0%, 100% { transform: rotate(-4deg); }
+            50% { transform: rotate(4deg); }
+        }
+        .animate-balance {
+            transform-origin: center center;
+            animation: balanceSeeSaw 4s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar untuk Area Diskusi / Modal */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #E2E8F0;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+
+        /* State terpilih untuk Misi 1 */
+        .stmt-card.selected {
+            border-color: #2563EB;
+            background-color: #EFF6FF;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- =====================================================================
+         TOP NAVIGATION BAR & SCOREBOARD TOGGLE (Tampil saat masuk aplikasi)
+    ====================================================================== -->
+    <header id="top-navbar" class="hidden sticky top-0 z-40 bg-navy-900 text-white shadow-lg border-b border-navy-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+            <!-- Kiri: Navigasi Beranda & Judul -->
+            <div class="flex items-center gap-3">
+                <button onclick="navigateTo('dashboard')" class="btn-touch bg-navy-800 hover:bg-navy-700 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 border border-slate-700 shadow-sm text-sm sm:text-base">
+                    <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span class="hidden sm:inline">Dashboard</span>
+                </button>
+                <div>
+                    <span class="text-xs uppercase tracking-wider text-gold-400 font-bold block">Pendidikan Pancasila • Kelas X</span>
+                    <h1 class="font-display font-bold text-base sm:text-xl leading-tight">MISI WARGA NEGARA</h1>
+                </div>
+            </div>
+
+            <!-- Tengah: Pemilih Kelompok Aktif (Memudahkan Otomatisasi Skor) -->
+            <div class="hidden md:flex items-center bg-navy-800 px-3 py-1.5 rounded-2xl border border-slate-700 gap-2">
+                <span class="text-xs text-slate-300 font-medium">Giliran Aktif:</span>
+                <select id="active-team-select" onchange="changeActiveTeam(this.value)" class="bg-electric-500 text-white font-bold text-sm px-3 py-1.5 rounded-xl focus:outline-none cursor-pointer">
+                    <option value="0">🦅 Kelompok Garuda</option>
+                    <option value="1">🦅 Kelompok Rajawali</option>
+                    <option value="2">🦅 Kelompok Elang</option>
+                    <option value="3">🕊️ Kelompok Merpati</option>
+                </select>
+            </div>
+
+            <!-- Kanan: Tombol Panel Papan Skor Kelompok & Suara -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="toggleSound()" id="sound-btn" title="Efek Suara" class="btn-touch bg-navy-800 hover:bg-navy-700 p-2.5 rounded-xl border border-slate-700 text-gold-400">
+                    <svg id="sound-on-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                    <svg id="sound-off-icon" class="w-6 h-6 hidden text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+                </button>
+
+                <button onclick="toggleScoreboardModal()" class="btn-touch bg-gold-500 hover:bg-gold-400 text-navy-900 font-extrabold px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 text-sm sm:text-base">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span>Papan Skor</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         MAIN CONTENT AREA
+    ====================================================================== -->
+    <main class="flex-grow flex flex-col">
+
+        <!-- =================================================================
+             1. HALAMAN PEMBUKA (LANDING SCREEN)
+        ================================================================== -->
+        <section id="page-landing" class="page-section active flex-grow bg-gradient-to-br from-navy-900 via-navy-800 to-electric-500 text-white flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+            <!-- Dekorasi Latar Geometris Halus -->
+            <div class="absolute top-0 left-0 w-96 h-96 bg-electric-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-gold-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/3 translate-y-1/3"></div>
+
+            <div class="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                <!-- Kolom Teks & Tombol -->
+                <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full text-gold-400 font-bold text-sm tracking-wide">
+                        <span>🇮🇩 KURIKULUM MERDEKA • PENDIDIKAN PANCASILA KELAS X SMA</span>
+                    </div>
+
+                    <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight tracking-tight">
+                        MISI <span class="text-gold-400">WARGA NEGARA</span>
+                    </h1>
+
+                    <p class="text-xl sm:text-2xl font-semibold text-blue-100">
+                        "Pahami Hakmu, Laksanakan Kewajibanmu!"
+                    </p>
+
+                    <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Petualangan belajar kolaboratif dan gamifikasi interaktif untuk mengeksplorasi keseimbangan hak dan kewajiban sebagai warga sekolah maupun warga masyarakat.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                        <button onclick="startAdventure()" class="btn-touch w-full sm:w-auto bg-gold-500 hover:bg-gold-400 text-navy-900 font-display font-extrabold text-lg sm:text-xl px-8 py-5 rounded-2xl shadow-xl shadow-gold-500/25 flex items-center justify-center gap-3">
+                            <span>MULAI PETUALANGAN</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        </button>
+
+                        <button onclick="toggleGuideModal()" class="btn-touch w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md border-2 border-white/30 text-white font-bold text-lg px-7 py-5 rounded-2xl flex items-center justify-center gap-2">
+                            <svg class="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>PETUNJUK PERMAINAN</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kolom Ilustrasi SVG Kustom: Siswa SMA, Sekolah & Masyarakat -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-6 rounded-3xl shadow-2xl w-full max-w-md">
+                        <svg viewBox="0 0 400 320" class="w-full h-auto drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Latar Langit & Matahari -->
+                            <circle cx="320" cy="60" r="32" fill="#FBBF24" opacity="0.9"/>
+                            <path d="M40 260 Q200 220 360 260 L360 290 L40 290 Z" fill="#1E3A8A"/>
+                            
+                            <!-- Gedung Sekolah (Kiri) -->
+                            <rect x="35" y="130" width="120" height="120" rx="10" fill="#EFF6FF"/>
+                            <polygon points="25,135 95,85 165,135" fill="#F59E0B"/>
+                            <rect x="78" y="190" width="34" height="60" rx="4" fill="#1D3557"/>
+                            <rect x="50" y="150" width="24" height="24" rx="4" fill="#3B82F6"/>
+                            <rect x="116" y="150" width="24" height="24" rx="4" fill="#3B82F6"/>
+                            <!-- Bendera Merah Putih -->
+                            <line x1="95" y1="85" x2="95" y2="45" stroke="#FFFFFF" stroke-width="3"/>
+                            <rect x="95" y="45" width="32" height="10" fill="#EF4444"/>
+                            <rect x="95" y="55" width="32" height="10" fill="#FFFFFF"/>
+
+                            <!-- Lingkungan Masyarakat / Taman & Rumah (Kanan) -->
+                            <rect x="245" y="150" width="110" height="100" rx="10" fill="#DBEAFE"/>
+                            <polygon points="235,155 300,110 365,155" fill="#2563EB"/>
+                            <rect x="285" y="195" width="30" height="55" rx="4" fill="#0A192F"/>
+                            <!-- Pohon Hijau -->
+                            <rect x="195" y="205" width="12" height="45" fill="#92400E"/>
+                            <circle cx="201" cy="185" r="28" fill="#10B981"/>
+
+                            <!-- Dua Siswa SMA Berdampingan (Seragam Putih Abu-abu) -->
+                            <!-- Siswa 1 (Putra) -->
+                            <circle cx="155" cy="185" r="20" fill="#FDE68A"/>
+                            <path d="M135 182 Q155 160 175 182" fill="#0F172A"/>
+                            <rect x="137" y="208" width="36" height="42" rx="8" fill="#FFFFFF"/>
+                            <rect x="137" y="245" width="36" height="35" rx="4" fill="#64748B"/>
+                            <polygon points="155,208 151,232 155,237 159,232" fill="#64748B"/>
+
+                            <!-- Siswa 2 (Putri) -->
+                            <circle cx="245" cy="188" r="19" fill="#FDE68A"/>
+                            <path d="M224 190 Q245 162 266 190 L268 215 L222 215 Z" fill="#1E293B"/>
+                            <rect x="227" y="210" width="36" height="40" rx="8" fill="#FFFFFF"/>
+                            <rect x="227" y="245" width="36" height="35" rx="4" fill="#64748B"/>
+
+                            <!-- Simbol Perisai Keseimbangan di Tengah -->
+                            <path d="M200 100 L226 112 V135 C226 152 200 165 200 165 C200 165 174 152 174 135 V112 L200 100 Z" fill="#F59E0B" stroke="#FFFFFF" stroke-width="3"/>
+                            <path d="M191 133 L198 140 L211 125" stroke="#0A192F" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-bold">
+                            <div class="bg-navy-900/60 p-2 rounded-xl text-blue-200">🤝 Kolaboratif</div>
+                            <div class="bg-navy-900/60 p-2 rounded-xl text-gold-400">🎮 Gamifikasi</div>
+                            <div class="bg-navy-900/60 p-2 rounded-xl text-emerald-300">🧠 Kritis</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             2. DASHBOARD UTAMA (6 MENU MISI & LEADERBOARD MINI)
+        ================================================================== -->
+        <section id="page-dashboard" class="page-section max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <!-- Header Dashboard & Progres Petualangan -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-electric-100 text-electric-500 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Peta Petualangan Kelas</span>
+                        <span id="progress-badge" class="bg-gold-100 text-amber-800 font-bold text-xs px-3 py-1 rounded-full">0 / 6 Zona Selesai</span>
+                    </div>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">Pilih Zona Misi Pembelajaran</h2>
+                    <p class="text-slate-600 text-sm sm:text-base">Ikuti alur misi secara berurutan atau pilih zona tantangan bersama kelompokmu.</p>
+                </div>
+
+                <!-- Pemilih Kelompok Aktif untuk Layar Sentuh Mobile/Tablet -->
+                <div class="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-slate-100 p-3 rounded-2xl">
+                    <span class="text-xs font-bold text-slate-500 uppercase px-2">Kelompok Bermain:</span>
+                    <div class="grid grid-cols-2 sm:flex gap-2" id="dashboard-team-pills">
+                        <!-- Diisi otomatis via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid 6 Menu Utama -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Menu 1: Zona Materi -->
+                <button onclick="navigateTo('materi')" class="card-hover btn-touch text-left bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-electric-500 shadow-sm flex flex-col justify-between group relative overflow-hidden">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-electric-500 flex items-center justify-center text-3xl font-bold group-hover:bg-electric-500 group-hover:text-white transition-colors">
+                            📘
+                        </div>
+                        <span id="status-materi" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Tahap 1</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-xl text-navy-900 mb-2">1. ZONA MATERI</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Eksplorasi konsep hak, kewajiban, serta contoh penerapannya di lingkungan sekolah dan masyarakat.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-electric-500 font-bold text-sm">
+                        <span>Pelajari Konsep</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </button>
+
+                <!-- Menu 2: Misi 1 -->
+                <button onclick="navigateTo('misi1')" class="card-hover btn-touch text-left bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-electric-500 shadow-sm flex flex-col justify-between group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl font-bold group-hover:bg-gold-500 group-hover:text-navy-900 transition-colors">
+                            🗂️
+                        </div>
+                        <span id="status-misi1" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Tahap 2</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-xl text-navy-900 mb-2">2. MISI 1: KENALI HAK & KEWAJIBAN</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Permainan klasifikasi cepat: kelompokkan 8 kartu perilaku ke dalam kategori Hak atau Kewajiban.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-electric-500 font-bold text-sm">
+                        <span>Mulai Klasifikasi</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </button>
+
+                <!-- Menu 3: Misi 2 -->
+                <button onclick="navigateTo('misi2')" class="card-hover btn-touch text-left bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-electric-500 shadow-sm flex flex-col justify-between group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl font-bold group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                            🏫
+                        </div>
+                        <span id="status-misi2" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Tahap 3</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-xl text-navy-900 mb-2">3. MISI 2: TANTANGAN WARGA SEKOLAH</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Simulasi pengambilan keputusan pada 4 situasi dilema nyata di lingkungan sekolah.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-electric-500 font-bold text-sm">
+                        <span>Pecahkan Tantangan</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </button>
+
+                <!-- Menu 4: Misi 3 -->
+                <button onclick="navigateTo('misi3')" class="card-hover btn-touch text-left bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-electric-500 shadow-sm flex flex-col justify-between group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl font-bold group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                            🏘️
+                        </div>
+                        <span id="status-misi3" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Tahap 4</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-xl text-navy-900 mb-2">4. MISI 3: TANTANGAN WARGA MASYARAKAT</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Analisis 4 kasus sosial: tentukan hak terkait, kewajiban yang dilalaikan, serta solusi terbaik.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-electric-500 font-bold text-sm">
+                        <span>Hadapi Studi Kasus</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </button>
+
+                <!-- Menu 5: Misi 4 -->
+                <button onclick="navigateTo('misi4')" class="card-hover btn-touch text-left bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-electric-500 shadow-sm flex flex-col justify-between group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-3xl font-bold group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                            🕵️
+                        </div>
+                        <span id="status-misi4" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Tahap 5</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-xl text-navy-900 mb-2">5. MISI 4: DETEKTIF KASUS</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Investigasi mendalam studi kasus fasilitas sekolah melalui diskusi kelompok & pembahasan interaktif.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-electric-500 font-bold text-sm">
+                        <span>Mulai Investigasi</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </button>
+
+                <!-- Menu 6: Arena Kuis & Refleksi -->
+                <button onclick="navigateTo('kuis')" class="card-hover btn-touch text-left bg-gradient-to-br from-navy-900 to-navy-800 text-white rounded-3xl p-6 border-2 border-navy-700 hover:border-gold-400 shadow-md flex flex-col justify-between group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-14 h-14 rounded-2xl bg-gold-500 text-navy-900 flex items-center justify-center text-3xl font-bold">
+                            🏆
+                        </div>
+                        <span id="status-kuis" class="text-xs font-bold px-3 py-1 rounded-full bg-white/10 text-gold-400">Final</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-xl text-white mb-2">6. ARENA KUIS & REFLEKSI</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">Kompetisi 10 soal analisis antarkelompok dilanjutkan dengan refleksi komitmen warga negara.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-gold-400 font-bold text-sm">
+                        <span>Masuk Arena Final</span>
+                        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Live Leaderboard Ringkas di Dashboard -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">📊</span>
+                        <h3 class="font-display font-bold text-lg text-navy-900">Klasemen Sementara Kelompok</h3>
+                    </div>
+                    <button onclick="toggleScoreboardModal()" class="text-electric-500 hover:text-electric-400 font-bold text-sm flex items-center gap-1">
+                        <span>Kelola Poin Kelompok (Panel Guru)</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    </button>
+                </div>
+                <div id="dashboard-leaderboard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Diisi via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             3. ZONA MATERI (5 TAB MATERI INTERAKTIF + DIAGRAM KESEIMBANGAN)
+        ================================================================== -->
+        <section id="page-materi" class="page-section max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <!-- Header Section -->
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-electric-500">Tahap 1 • Eksplorasi Konsep</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">ZONA MATERI PEMBELAJARAN</h2>
+                </div>
+                <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    <span>Kembali</span>
+                </button>
+            </div>
+
+            <!-- Navigasi Tab 5 Materi -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3" id="materi-tabs">
+                <button onclick="selectMateriTab(0)" class="materi-tab-btn btn-touch p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-navy-900 text-white border-navy-900 shadow-md">
+                    1. Pengertian Hak
+                </button>
+                <button onclick="selectMateriTab(1)" class="materi-tab-btn btn-touch p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-white text-slate-700 border-slate-200 hover:border-electric-400">
+                    2. Pengertian Kewajiban
+                </button>
+                <button onclick="selectMateriTab(2)" class="materi-tab-btn btn-touch p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-white text-slate-700 border-slate-200 hover:border-electric-400">
+                    3. Warga Sekolah
+                </button>
+                <button onclick="selectMateriTab(3)" class="materi-tab-btn btn-touch p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-white text-slate-700 border-slate-200 hover:border-electric-400">
+                    4. Warga Masyarakat
+                </button>
+                <button onclick="selectMateriTab(4)" class="materi-tab-btn btn-touch col-span-2 sm:col-span-1 p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-white text-slate-700 border-slate-200 hover:border-electric-400">
+                    5. Hubungan & Keseimbangan
+                </button>
+            </div>
+
+            <!-- Konten Materi Dinamis -->
+            <div id="materi-content-box" class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-md min-h-[380px] flex flex-col justify-between">
+                <!-- Diisi melalui JavaScript -->
+            </div>
+
+            <!-- Navigasi Bawah Materi -->
+            <div class="flex items-center justify-between gap-4">
+                <button id="prev-materi-btn" onclick="changeMateriStep(-1)" class="btn-touch bg-white border-2 border-slate-300 text-slate-700 font-bold px-6 py-4 rounded-2xl disabled:opacity-40">
+                    ← Materi Sebelumnya
+                </button>
+                <button id="next-materi-btn" onclick="changeMateriStep(1)" class="btn-touch bg-electric-500 hover:bg-electric-400 text-white font-bold px-6 py-4 rounded-2xl shadow-md">
+                    Materi Selanjutnya →
+                </button>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             4. MISI 1: KENALI HAK DAN KEWAJIBAN (KLASIFIKASI INTERAKTIF)
+        ================================================================== -->
+        <section id="page-misi1" class="page-section max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Tahap 2 • Klasifikasi Perilaku</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">MISI 1: KENALI HAK & KEWAJIBAN</h2>
+                    <p class="text-slate-600 text-sm sm:text-base mt-1">Seret kartu ke kotak kategori atau <strong>ketuk kartu pernyataan lalu ketuk kotak HAK / KEWAJIBAN</strong>.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetMisi1()" class="btn-touch bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-4 py-3 rounded-xl text-sm">
+                        🔄 Ulangi Misi
+                    </button>
+                    <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl text-sm">
+                        Beranda
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Banner -->
+            <div id="misi1-feedback" class="hidden p-4 rounded-2xl font-semibold text-center text-base transition-all"></div>
+
+            <!-- Area Kartu Pernyataan yang Belum Dikelompokkan -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-navy-900 text-lg">Daftar Kartu Pernyataan (<span id="misi1-remaining">8</span> tersisa):</h3>
+                    <span class="text-xs bg-blue-50 text-electric-500 font-bold px-3 py-1 rounded-full">+10 Poin per kartu benar</span>
+                </div>
+                <div id="misi1-cards-pool" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 min-h-[100px]">
+                    <!-- Kartu di-render via JS -->
+                </div>
+            </div>
+
+            <!-- Dua Zona Target Drop / Tap: HAK vs KEWAJIBAN -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Zona HAK -->
+                <div id="dropzone-HAK"
+                     ondragover="allowDrop(event)"
+                     ondrop="handleDrop(event, 'HAK')"
+                     onclick="handleZoneClick('HAK')"
+                     class="btn-touch cursor-pointer bg-gradient-to-b from-blue-50 to-white border-4 border-dashed border-electric-400 hover:bg-blue-100/60 rounded-3xl p-6 min-h-[260px] flex flex-col transition-all">
+                    <div class="flex items-center justify-between border-b-2 border-blue-200 pb-3 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-electric-500 text-white flex items-center justify-center font-extrabold text-xl">H</span>
+                            <div>
+                                <h3 class="font-display font-extrabold text-xl text-navy-900">KATEGORI HAK</h3>
+                                <p class="text-xs text-slate-500">Sesuatu yang pantas diterima/diperoleh</p>
+                            </div>
+                        </div>
+                        <span id="count-HAK" class="bg-electric-500 text-white font-bold px-3 py-1 rounded-full text-sm">0</span>
+                    </div>
+                    <div id="list-HAK" class="space-y-2 flex-grow"></div>
+                </div>
+
+                <!-- Zona KEWAJIBAN -->
+                <div id="dropzone-KEWAJIBAN"
+                     ondragover="allowDrop(event)"
+                     ondrop="handleDrop(event, 'KEWAJIBAN')"
+                     onclick="handleZoneClick('KEWAJIBAN')"
+                     class="btn-touch cursor-pointer bg-gradient-to-b from-amber-50 to-white border-4 border-dashed border-gold-500 hover:bg-amber-100/60 rounded-3xl p-6 min-h-[260px] flex flex-col transition-all">
+                    <div class="flex items-center justify-between border-b-2 border-amber-200 pb-3 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-gold-500 text-navy-900 flex items-center justify-center font-extrabold text-xl">K</span>
+                            <div>
+                                <h3 class="font-display font-extrabold text-xl text-navy-900">KATEGORI KEWAJIBAN</h3>
+                                <p class="text-xs text-slate-500">Sesuatu yang harus dilaksanakan</p>
+                            </div>
+                        </div>
+                        <span id="count-KEWAJIBAN" class="bg-gold-500 text-navy-900 font-bold px-3 py-1 rounded-full text-sm">0</span>
+                    </div>
+                    <div id="list-KEWAJIBAN" class="space-y-2 flex-grow"></div>
+                </div>
+            </div>
+
+            <!-- Tombol Lanjut ke Misi 2 -->
+            <div id="misi1-complete-bar" class="hidden bg-emerald-600 text-white p-6 rounded-3xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-4xl">🎉</span>
+                    <div>
+                        <h4 class="font-display font-extrabold text-xl">Luar Biasa! Semua Kartu Berhasil Diklasifikasikan!</h4>
+                        <p class="text-emerald-100 text-sm">Kalian telah memahami perbedaan mendasar antara Hak dan Kewajiban.</p>
+                    </div>
+                </div>
+                <button onclick="navigateTo('misi2')" class="btn-touch bg-white text-emerald-800 font-extrabold px-6 py-4 rounded-2xl shadow-md whitespace-nowrap">
+                    Lanjut ke Misi 2 →
+                </button>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             5. MISI 2: TANTANGAN WARGA SEKOLAH (4 KASUS SITUASIONAL)
+        ================================================================== -->
+        <section id="page-misi2" class="page-section max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Tahap 3 • Pengambilan Keputusan</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">MISI 2: TANTANGAN WARGA SEKOLAH</h2>
+                </div>
+                <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl">
+                    Beranda
+                </button>
+            </div>
+
+            <!-- Indikator Kasus 1 - 4 -->
+            <div class="grid grid-cols-4 gap-2 sm:gap-4" id="misi2-indicators">
+                <!-- Diisi via JS -->
+            </div>
+
+            <!-- Kartu Kasus Misi 2 -->
+            <div id="misi2-card" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-md space-y-6">
+                <!-- Diisi via JS -->
+            </div>
+        </section>
+
+        <!-- =================================================================
+             6. MISI 3: TANTANGAN WARGA MASYARAKAT (ANALISIS 3 ASPEK)
+        ================================================================== -->
+        <section id="page-misi3" class="page-section max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Tahap 4 • Analisis Kasus Sosial</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">MISI 3: TANTANGAN WARGA MASYARAKAT</h2>
+                </div>
+                <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl">
+                    Beranda
+                </button>
+            </div>
+
+            <!-- Navigasi 4 Kasus Masyarakat -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3" id="misi3-tabs">
+                <!-- Diisi via JS -->
+            </div>
+
+            <!-- Konten Analisis Kasus Misi 3 -->
+            <div id="misi3-container" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-md space-y-6">
+                <!-- Diisi via JS -->
+            </div>
+        </section>
+
+        <!-- =================================================================
+             7. MISI 4: DETEKTIF KASUS (PROBLEM BASED LEARNING KELOMPOK)
+        ================================================================== -->
+        <section id="page-misi4" class="page-section max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Tahap 5 • Problem Based Learning</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">MISI 4: DETEKTIF KASUS</h2>
+                </div>
+                <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl">
+                    Beranda
+                </button>
+            </div>
+
+            <!-- Kotak Kasus Utama -->
+            <div class="bg-gradient-to-r from-navy-900 to-navy-800 text-white rounded-3xl p-6 sm:p-8 shadow-lg border-l-8 border-gold-500">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-gold-500 text-navy-900 font-extrabold text-xs px-3 py-1 rounded-full uppercase">Berkas Investigasi #01</span>
+                    <span class="text-slate-300 text-sm">Diskusikan bersama kelompokmu!</span>
+                </div>
+                <p class="text-lg sm:text-2xl font-semibold leading-relaxed text-blue-50">
+                    "Di sebuah sekolah, terdapat siswa yang menuntut hak menggunakan fasilitas sekolah. Namun, beberapa siswa tidak menjaga fasilitas tersebut, mencoret meja, membuang sampah sembarangan, dan mengabaikan tata tertib."
+                </p>
+            </div>
+
+            <!-- 5 Pertanyaan Investigasi Interaktif -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-display font-bold text-lg text-navy-900">Lembar Kerja Hasil Diskusi Kelompok</h3>
+                        <button onclick="awardDetectiveBonus()" class="btn-touch bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs px-3 py-2 rounded-xl">
+                            +20 Poin Analisis Kelompok
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-500">Ketikkan poin-poin jawaban hasil diskusi perwakilan kelompok di layar interaktif:</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block font-bold text-sm text-navy-900 mb-1">1. Hak apa yang ingin mereka peroleh?</label>
+                            <textarea id="detective-q1" rows="2" placeholder="Tuliskan hasil diskusi kelompok..." class="w-full p-3 rounded-xl border border-slate-300 focus:border-electric-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-sm text-navy-900 mb-1">2. Kewajiban apa yang mereka abaikan?</label>
+                            <textarea id="detective-q2" rows="2" placeholder="Tuliskan hasil diskusi kelompok..." class="w-full p-3 rounded-xl border border-slate-300 focus:border-electric-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-sm text-navy-900 mb-1">3. Siapa saja yang dirugikan?</label>
+                            <textarea id="detective-q3" rows="2" placeholder="Tuliskan hasil diskusi kelompok..." class="w-full p-3 rounded-xl border border-slate-300 focus:border-electric-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-sm text-navy-900 mb-1">4. Bagaimana solusi yang seharusnya dilakukan?</label>
+                            <textarea id="detective-q4" rows="2" placeholder="Tuliskan hasil diskusi kelompok..." class="w-full p-3 rounded-xl border border-slate-300 focus:border-electric-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-sm text-navy-900 mb-1">5. Apa hubungan antara hak dan kewajiban dalam kasus tersebut?</label>
+                            <textarea id="detective-q5" rows="2" placeholder="Tuliskan hasil diskusi kelompok..." class="w-full p-3 rounded-xl border border-slate-300 focus:border-electric-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Kunci Pembahasan Guru -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-display font-bold text-lg text-navy-900">Panel Konfirmasi & Analisis</h3>
+                            <button onclick="toggleDetectiveDiscussion()" id="btn-toggle-pembahasan" class="btn-touch bg-gold-500 hover:bg-gold-400 text-navy-900 font-extrabold px-5 py-3 rounded-xl shadow-sm text-sm">
+                                🔍 TAMPILKAN PEMBAHASAN
+                            </button>
+                        </div>
+
+                        <div id="detective-placeholder" class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center space-y-3">
+                            <div class="text-4xl">🔐</div>
+                            <h4 class="font-bold text-navy-900">Pembahasan Terkunci Selama Diskusi</h4>
+                            <p class="text-sm text-slate-600">Setelah perwakilan kelompok mempresentasikan jawabannya, guru dapat menekan tombol <strong>"TAMPILKAN PEMBAHASAN"</strong> di atas untuk membandingkan analisis.</p>
+                        </div>
+
+                        <div id="detective-answer-key" class="hidden space-y-3 text-sm">
+                            <div class="p-3.5 rounded-2xl bg-blue-50 border border-blue-200">
+                                <span class="font-extrabold text-electric-500 block">1. Hak yang Diinginkan:</span>
+                                <p class="text-slate-700 mt-1">Hak menggunakan fasilitas belajar sekolah (ruang kelas, meja, kursi, lingkungan nyaman) secara layak.</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
+                                <span class="font-extrabold text-amber-700 block">2. Kewajiban yang Diabaikan:</span>
+                                <p class="text-slate-700 mt-1">Menjaga kebersihan lingkungan sekolah, merawat fasilitas umum sekolah, dan mematuhi tata tertib sekolah.</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200">
+                                <span class="font-extrabold text-rose-700 block">3. Pihak yang Dirugikan:</span>
+                                <p class="text-slate-700 mt-1">Seluruh warga sekolah (siswa lain yang ingin belajar nyaman, guru, petugas kebersihan, dan sekolah yang menanggung biaya perbaikan).</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+                                <span class="font-extrabold text-emerald-700 block">4. Solusi Tepat:</span>
+                                <p class="text-slate-700 mt-1">Melakukan pembersihan/perbaikan fasilitas yang dirusak sebagai bentuk tanggung jawab, menegakkan tata tertib secara edukatif, dan membangun budaya piket bersama.</p>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200">
+                                <span class="font-extrabold text-indigo-700 block">5. Hubungan Hak & Kewajiban:</span>
+                                <p class="text-slate-700 mt-1">Hak dan kewajiban bersifat timbal balik. Pemenuhan hak atas fasilitas nyaman hanya terwujud jika setiap siswa menjalankan kewajiban merawatnya.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200 flex justify-end">
+                        <button onclick="completeMisi4AndNext()" class="btn-touch bg-electric-500 hover:bg-electric-400 text-white font-bold px-6 py-4 rounded-2xl shadow-md">
+                            Lanjut ke Arena Kuis Final →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             8. ARENA KUIS (10 SOAL KOMPETISI ANTARKELOMPOK)
+        ================================================================== -->
+        <section id="page-kuis" class="page-section max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-gold-500">Tahap 6 • Kompetisi Sehat</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">ARENA KUIS WARGA NEGARA</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="navigateTo('refleksi')" class="btn-touch bg-navy-900 hover:bg-navy-800 text-gold-400 font-bold px-4 py-3 rounded-xl text-sm">
+                        Ke Halaman Refleksi →
+                    </button>
+                    <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl text-sm">
+                        Beranda
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bar Kemajuan Soal & Pemilih Kelompok Penjawab -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span id="quiz-progress-text" class="font-display font-extrabold text-lg text-navy-900">Soal 1 dari 10</span>
+                        <span id="quiz-score-badge" class="bg-blue-100 text-electric-500 font-bold text-xs px-3 py-1 rounded-full">Skor Kuis: 0</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500">Kelompok Penjawab:</span>
+                        <select id="quiz-team-select" onchange="changeActiveTeam(this.value)" class="bg-gold-100 border border-gold-400 text-navy-900 font-bold text-sm px-3 py-1.5 rounded-xl">
+                            <option value="0">🦅 Kelompok Garuda</option>
+                            <option value="1">🦅 Kelompok Rajawali</option>
+                            <option value="2">🦅 Kelompok Elang</option>
+                            <option value="3">🕊️ Kelompok Merpati</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+                    <div id="quiz-progress-bar" class="bg-electric-500 h-full transition-all duration-300" style="width: 10%;"></div>
+                </div>
+            </div>
+
+            <!-- Area Pertanyaan Kuis -->
+            <div id="quiz-box" class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-md">
+                <!-- Diisi via JavaScript -->
+            </div>
+        </section>
+
+        <!-- =================================================================
+             9. REFLEKSI PEMBELAJARAN & PENUTUP
+        ================================================================== -->
+        <section id="page-refleksi" class="page-section max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Tahap Akhir • Komitmen Diri</span>
+                    <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">REFLEKSI & KOMITMEN WARGA NEGARA</h2>
+                </div>
+                <button onclick="navigateTo('dashboard')" class="btn-touch bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl">
+                    Beranda
+                </button>
+            </div>
+
+            <!-- 4 Pertanyaan Refleksi Interaktif -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-md space-y-6">
+                <p class="text-slate-600 text-base">Tuliskan refleksi kelas atau perwakilan siswa pada layar interaktif sebelum menutup pembelajaran hari ini:</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <label class="font-display font-bold text-navy-900 block mb-2">1. Apa hal baru yang kamu pelajari hari ini?</label>
+                        <textarea id="ref-1" rows="3" placeholder="Ketik refleksi siswa di sini..." class="w-full p-3 rounded-xl border border-slate-300 bg-white focus:border-electric-500 outline-none text-sm"></textarea>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <label class="font-display font-bold text-navy-900 block mb-2">2. Mengapa hak dan kewajiban harus dilaksanakan secara seimbang?</label>
+                        <textarea id="ref-2" rows="3" placeholder="Ketik refleksi siswa di sini..." class="w-full p-3 rounded-xl border border-slate-300 bg-white focus:border-electric-500 outline-none text-sm"></textarea>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <label class="font-display font-bold text-navy-900 block mb-2">3. Apa contoh kewajiban yang akan kamu laksanakan mulai hari ini?</label>
+                        <textarea id="ref-3" rows="3" placeholder="Ketik komitmen tindakan nyata..." class="w-full p-3 rounded-xl border border-slate-300 bg-white focus:border-electric-500 outline-none text-sm"></textarea>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <label class="font-display font-bold text-navy-900 block mb-2">4. Bagaimana cara menghargai hak orang lain?</label>
+                        <textarea id="ref-4" rows="3" placeholder="Ketik sikap saling menghargai..." class="w-full p-3 rounded-xl border border-slate-300 bg-white focus:border-electric-500 outline-none text-sm"></textarea>
+                    </div>
+                </div>
+
+                <!-- Kutipan Penutup Utama -->
+                <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-electric-500 text-white p-8 rounded-3xl text-center space-y-4 shadow-xl">
+                    <div class="text-4xl">🇮🇩</div>
+                    <blockquote class="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl leading-snug max-w-3xl mx-auto text-gold-400">
+                        "Warga negara yang baik bukan hanya mereka yang mengetahui haknya, tetapi juga mereka yang bertanggung jawab melaksanakan kewajibannya."
+                    </blockquote>
+                    <div class="pt-4 flex flex-wrap justify-center gap-4">
+                        <button onclick="finishAdventure()" class="btn-touch bg-gold-500 hover:bg-gold-400 text-navy-900 font-extrabold px-8 py-4 rounded-2xl shadow-lg text-lg">
+                            🎉 SELESAI & LIHAT PODIUM JUARA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         MODAL 1: PETUNJUK PERMAINAN
+    ====================================================================== -->
+    <div id="modal-guide" class="hidden fixed inset-0 z-50 bg-navy-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <h3 class="font-display font-extrabold text-2xl text-navy-900">📖 Petunjuk Permainan & Alur Kelas</h3>
+                <button onclick="toggleGuideModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-600">✕</button>
+            </div>
+            <div class="space-y-4 text-slate-700 text-sm sm:text-base">
+                <div class="flex items-start gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-electric-500 text-white font-bold flex items-center justify-center shrink-0">1</span>
+                    <p><strong>Pembagian 4 Kelompok:</strong> Bagi siswa di kelas menjadi 4 kelompok besar: <em>Garuda, Rajawali, Elang, dan Merpati</em>.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-electric-500 text-white font-bold flex items-center justify-center shrink-0">2</span>
+                    <p><strong>Alur Petualangan:</strong> Mulai dari <em>Zona Materi</em> → <em>Misi 1 (Klasifikasi)</em> → <em>Misi 2 (Sekolah)</em> → <em>Misi 3 (Masyarakat)</em> → <em>Misi 4 (Detektif Kasus)</em> → <em>Arena Kuis</em> → <em>Refleksi</em>.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-electric-500 text-white font-bold flex items-center justify-center shrink-0">3</span>
+                    <p><strong>Sistem Poin Otomatis & Manual:</strong> Setiap jawaban benar otomatis menambah poin kelompok yang sedang aktif (<strong>+10 poin</strong> jawaban benar, <strong>+20 poin</strong> analisis kasus). Guru juga dapat menyesuaikan poin partisipasi lewat tombol <strong>Papan Skor</strong> di pojok kanan atas.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-electric-500 text-white font-bold flex items-center justify-center shrink-0">4</span>
+                    <p><strong>Interaksi Layar Sentuh:</strong> Semua tombol dirancang berukuran besar untuk memudahkan siswa maupun guru berinteraksi langsung di depan panel interaktif kelas.</p>
+                </div>
+            </div>
+            <div class="pt-2 flex justify-end">
+                <button onclick="toggleGuideModal()" class="btn-touch bg-navy-900 text-white font-bold px-6 py-3 rounded-xl">Mengerti, Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 2: PAPAN SKOR KOLABORASI & KONTROL POIN GURU
+    ====================================================================== -->
+    <div id="modal-scoreboard" class="hidden fixed inset-0 z-50 bg-navy-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <div>
+                    <span class="text-xs font-bold text-gold-500 uppercase tracking-wider">Live Leaderboard</span>
+                    <h3 class="font-display font-extrabold text-2xl text-navy-900">🏆 Papan Skor & Kontrol Poin Kelompok</h3>
+                </div>
+                <button onclick="toggleScoreboardModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-600">✕</button>
+            </div>
+
+            <!-- Keterangan Aturan Poin -->
+            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-2xl text-center text-xs sm:text-sm font-semibold text-slate-700 border border-slate-200">
+                <div>✅ Jawaban Benar: <span class="text-electric-500 font-extrabold">+10</span></div>
+                <div>🕵️ Analisis Kasus: <span class="text-emerald-600 font-extrabold">+20</span></div>
+                <div>🤝 Kerja Sama/Aktif: <span class="text-amber-600 font-extrabold">+10</span></div>
+            </div>
+
+            <!-- Daftar 4 Kelompok dengan Tombol Tambah/Kurang -->
+            <div id="modal-teams-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Diisi via JS -->
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200">
+                <button onclick="resetAllScores()" class="text-rose-600 hover:text-rose-700 font-bold text-sm px-4 py-2 rounded-xl hover:bg-rose-50">
+                    Reset Semua Skor ke 0
+                </button>
+                <button onclick="toggleScoreboardModal()" class="btn-touch bg-navy-900 text-white font-bold px-6 py-3 rounded-xl">
+                    Selesai & Lanjutkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifikasi Poin (Non-blocking pengganti alert) -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-navy-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-gold-400 flex items-center gap-3 font-bold text-sm">
+            <span id="toast-icon" class="text-xl">⭐</span>
+            <span id="toast-text">+10 Poin untuk Kelompok Garuda!</span>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         JAVASCRIPT LOGIC & STATE MANAGEMENT
+    ====================================================================== -->
+    <script>
+        // =================================================================
+        // 1. STATE APLIKASI & AUDIO SYNTHESIZER (TONE.JS)
+        // =================================================================
+        const appState = {
+            currentPage: 'landing',
+            soundEnabled: true,
+            activeTeamIndex: 0,
+            teams: [
+                { id: 0, name: 'Kelompok Garuda', icon: '🦅', score: 0, color: 'from-amber-500 to-orange-600' },
+                { id: 1, name: 'Kelompok Rajawali', icon: '🦅', score: 0, color: 'from-blue-600 to-indigo-700' },
+                { id: 2, name: 'Kelompok Elang', icon: '🦅', score: 0, color: 'from-emerald-500 to-teal-700' },
+                { id: 3, name: 'Kelompok Merpati', icon: '🕊️', score: 0, color: 'from-sky-500 to-cyan-600' }
+            ],
+            completedZones: {
+                materi: false,
+                misi1: false,
+                misi2: false,
+                misi3: false,
+                misi4: false,
+                kuis: false
+            },
+            materiStep: 0,
+            misi1SelectedCardId: null,
+            misi1Placed: {}, // { cardId: 'HAK' | 'KEWAJIBAN' }
+            misi2CurrentCase: 0,
+            misi2Answered: {}, // { caseIdx: optionIdx }
+            misi3CurrentCase: 0,
+            misi3Answered: {}, // { caseIdx: { hak: bool, kewajiban: bool, solusi: bool } }
+            quizCurrentIdx: 0,
+            quizScore: 0,
+            quizAnswered: {} // { qIdx: selectedOptionIdx }
+        };
+
+        // Efek suara sintetis ringan tanpa file eksternal
+        function playTone(type) {
+            if (!appState.soundEnabled || typeof Tone === 'undefined') return;
+            try {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                const synth = new Tone.Synth().toDestination();
+                if (type === 'click') {
+                    synth.triggerAttackRelease('C5', '32n');
+                } else if (type === 'correct') {
+                    synth.triggerAttackRelease('E5', '16n');
+                    setTimeout(() => synth.triggerAttackRelease('G5', '16n'), 90);
+                    setTimeout(() => synth.triggerAttackRelease('C6', '8n'), 180);
+                } else if (type === 'wrong') {
+                    synth.triggerAttackRelease('A3', '16n');
+                    setTimeout(() => synth.triggerAttackRelease('F3', '8n'), 120);
+                } else if (type === 'fanfare') {
+                    synth.triggerAttackRelease('C5', '16n');
+                    setTimeout(() => synth.triggerAttackRelease('E5', '16n'), 100);
+                    setTimeout(() => synth.triggerAttackRelease('G5', '16n'), 200);
+                    setTimeout(() => synth.triggerAttackRelease('C6', '4n'), 300);
+                }
+            } catch (e) {
+                // Abaikan jika browser membatasi audio sebelum interaksi
+            }
+        }
+
+        function toggleSound() {
+            appState.soundEnabled = !appState.soundEnabled;
+            document.getElementById('sound-on-icon').classList.toggle('hidden', !appState.soundEnabled);
+            document.getElementById('sound-off-icon').classList.toggle('hidden', appState.soundEnabled);
+        }
+
+        function showToast(text, icon = '⭐') {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-text').textContent = text;
+            document.getElementById('toast-icon').textContent = icon;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 2600);
+        }
+
+        // =================================================================
+        // 2. NAVIGASI HALAMAN & MODAL
+        // =================================================================
+        function startAdventure() {
+            playTone('fanfare');
+            navigateTo('dashboard');
+        }
+
+        function navigateTo(pageId) {
+            playTone('click');
+            appState.currentPage = pageId;
+
+            // Sembunyikan semua section
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) target.classList.add('active');
+
+            // Tampilkan/Sembunyikan Navbar Atas
+            const navbar = document.getElementById('top-navbar');
+            if (pageId === 'landing') {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+
+            // Render konten sesuai halaman tujuan
+            if (pageId === 'dashboard') renderDashboard();
+            if (pageId === 'materi') renderMateri();
+            if (pageId === 'misi1') renderMisi1();
+            if (pageId === 'misi2') renderMisi2();
+            if (pageId === 'misi3') renderMisi3();
+            if (pageId === 'kuis') renderQuiz();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleGuideModal() {
+            playTone('click');
+            document.getElementById('modal-guide').classList.toggle('hidden');
+        }
+
+        function toggleScoreboardModal() {
+            playTone('click');
+            renderScoreboardModal();
+            document.getElementById('modal-scoreboard').classList.toggle('hidden');
+        }
+
+        // =================================================================
+        // 3. SISTEM KELOMPOK & PAPAN SKOR
+        // =================================================================
+        function changeActiveTeam(index) {
+            appState.activeTeamIndex = parseInt(index, 10);
+            document.getElementById('active-team-select').value = appState.activeTeamIndex;
+            const quizSelect = document.getElementById('quiz-team-select');
+            if (quizSelect) quizSelect.value = appState.activeTeamIndex;
+            renderDashboardTeamPills();
+        }
+
+        function addTeamPoints(teamIndex, delta, reason = '') {
+            const team = appState.teams[teamIndex];
+            team.score = Math.max(0, team.score + delta);
+            renderDashboardLeaderboard();
+            renderScoreboardModal();
+            if (delta > 0) {
+                showToast(`+${delta} Poin untuk ${team.name}! ${reason}`, '🏆');
+            }
+        }
+
+        function resetAllScores() {
+            appState.teams.forEach(t => t.score = 0);
+            renderDashboardLeaderboard();
+            renderScoreboardModal();
+            showToast('Semua skor kelompok telah di-reset ke 0', '🔄');
+        }
+
+        function renderDashboardTeamPills() {
+            const container = document.getElementById('dashboard-team-pills');
+            if (!container) return;
+            container.innerHTML = appState.teams.map((team, idx) => {
+                const isActive = idx === appState.activeTeamIndex;
+                return `
+                    <button onclick="changeActiveTeam(${idx})" class="btn-touch px-3 py-2 rounded-xl font-bold text-xs sm:text-sm transition-all ${
+                        isActive
+                            ? 'bg-electric-500 text-white shadow-md ring-2 ring-blue-300'
+                            : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
+                    }">
+                        ${team.icon} ${team.name.replace('Kelompok ', '')}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderDashboardLeaderboard() {
+            const container = document.getElementById('dashboard-leaderboard');
+            if (!container) return;
+            const sorted = [...appState.teams].sort((a, b) => b.score - a.score);
+            container.innerHTML = sorted.map((team, rank) => {
+                const medals = ['🥇', '🥈', '🥉', '🎖️'];
+                return `
+                    <div class="p-4 rounded-2xl border ${rank === 0 && team.score > 0 ? 'bg-amber-50 border-gold-400' : 'bg-slate-50 border-slate-200'} flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${medals[rank]}</span>
+                            <div>
+                                <div class="font-bold text-navy-900 text-sm">${team.name}</div>
+                                <div class="text-xs text-slate-500">Peringkat #${rank + 1}</div>
+                            </div>
+                        </div>
+                        <div class="font-display font-extrabold text-xl text-electric-500">${team.score} <span class="text-xs font-normal text-slate-500">pts</span></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderScoreboardModal() {
+            const container = document.getElementById('modal-teams-list');
+            if (!container) return;
+            // Urutkan tampilan berdasarkan skor tertinggi untuk efek live leaderboard
+            const sorted = [...appState.teams].sort((a, b) => b.score - a.score);
+            container.innerHTML = sorted.map((team, rank) => `
+                <div class="p-5 rounded-2xl border-2 ${rank === 0 && team.score > 0 ? 'border-gold-400 bg-amber-50/40' : 'border-slate-200 bg-white'} flex flex-col justify-between gap-4 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-navy-900 text-gold-400 font-display font-extrabold flex items-center justify-center">#${rank + 1}</span>
+                            <div>
+                                <h4 class="font-display font-bold text-lg text-navy-900">${team.icon} ${team.name}</h4>
+                                <span class="text-xs text-slate-500">Total Perolehan Poin</span>
+                            </div>
+                        </div>
+                        <div class="font-display font-extrabold text-3xl text-electric-500">${team.score}</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 pt-2 border-t border-slate-100">
+                        <button onclick="addTeamPoints(${team.id}, -10)" class="btn-touch bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 rounded-xl text-sm">-10</button>
+                        <button onclick="addTeamPoints(${team.id}, 10, '(Jawaban/Partisipasi)')" class="btn-touch bg-blue-100 hover:bg-blue-200 text-electric-500 font-bold py-2.5 rounded-xl text-sm">+10</button>
+                        <button onclick="addTeamPoints(${team.id}, 20, '(Analisis Kasus)')" class="btn-touch bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-2.5 rounded-xl text-sm">+20</button>
+                        <button onclick="changeActiveTeam(${team.id}); toggleScoreboardModal();" class="btn-touch bg-navy-900 text-white font-bold py-2.5 rounded-xl text-xs">Pilih Aktif</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDashboard() {
+            renderDashboardTeamPills();
+            renderDashboardLeaderboard();
+
+            // Update badge status selesai
+            const keys = Object.keys(appState.completedZones);
+            const doneCount = keys.filter(k => appState.completedZones[k]).length;
+            document.getElementById('progress-badge').textContent = `${doneCount} / 6 Zona Selesai`;
+
+            keys.forEach(k => {
+                const el = document.getElementById(`status-${k}`);
+                if (el && appState.completedZones[k]) {
+                    el.textContent = '✓ Selesai';
+                    el.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700';
+                }
+            });
+        }
+
+        // =================================================================
+        // 4. DATA & LOGIKA ZONA MATERI (5 BAGIAN)
+        // =================================================================
+        const materiData = [
+            {
+                title: 'Materi 1: Pengertian Hak',
+                badge: 'Konsep Dasar 1',
+                icon: '🎁',
+                definition: 'Hak merupakan sesuatu yang pantas diterima, dimiliki, atau diperoleh seseorang sesuai dengan ketentuan dan norma yang berlaku.',
+                points: [
+                    'Hak melekat pada setiap manusia sejak lahir (Hak Asasi) maupun diperoleh karena kedudukannya (sebagai siswa atau warga negara).',
+                    'Pemenuhan hak seseorang dibatasi oleh hak orang lain serta aturan hukum yang berlaku.',
+                    'Contoh sederhana: Siswa berhak memperoleh ilmu pengetahuan dan perlindungan di sekolah.'
+                ],
+                visualType: 'hak'
+            },
+            {
+                title: 'Materi 2: Pengertian Kewajiban',
+                badge: 'Konsep Dasar 2',
+                icon: '🛡️',
+                definition: 'Kewajiban merupakan sesuatu yang harus dilaksanakan dengan penuh rasa tanggung jawab sebelum atau seiring menuntut hak.',
+                points: [
+                    'Kewajiban adalah beban moral sekaligus tanggung jawab hukum/sosial yang mengikat setiap individu.',
+                    'Pelaksanaan kewajiban menjamin terciptanya ketertiban, keadilan, dan keharmonisan bersama.',
+                    'Contoh sederhana: Siswa wajib menaati tata tertib sekolah dan menghormati guru.'
+                ],
+                visualType: 'kewajiban'
+            },
+            {
+                title: 'Materi 3: Hak dan Kewajiban di Sekolah',
+                badge: 'Lingkungan Sekolah',
+                icon: '🏫',
+                hakList: [
+                    'Mendapatkan pembelajaran dan bimbingan dari guru.',
+                    'Menggunakan fasilitas sekolah (perpustakaan, laboratorium, lapangan).',
+                    'Mendapatkan perlindungan dan rasa aman dari perundungan.',
+                    'Menyampaikan pendapat secara santun dalam diskusi.'
+                ],
+                kewajibanList: [
+                    'Mematuhi tata tertib dan peraturan sekolah.',
+                    'Menghormati guru, tenaga kependidikan, dan sesama teman.',
+                    'Menjaga kebersihan serta merawat fasilitas sekolah.',
+                    'Mengikuti kegiatan pembelajaran dengan penuh tanggung jawab.'
+                ],
+                visualType: 'comparison'
+            },
+            {
+                title: 'Materi 4: Hak dan Kewajiban di Masyarakat',
+                badge: 'Lingkungan Masyarakat',
+                icon: '🏘️',
+                hakList: [
+                    'Mendapatkan lingkungan yang aman, bersih, dan nyaman.',
+                    'Memperoleh pelayanan publik secara adil tanpa diskriminasi.',
+                    'Menyampaikan pendapat dan aspirasi di muka umum sesuai aturan.',
+                    'Menggunakan fasilitas umum (taman, jalan, transportasi) sesuai ketentuan.'
+                ],
+                kewajibanList: [
+                    'Menghormati hak dan kebebasan orang lain.',
+                    'Menjaga ketertiban, keamanan, dan kebersihan lingkungan.',
+                    'Berpartisipasi aktif dalam kegiatan masyarakat (kerja bakti, musyawarah).',
+                    'Menjaga dan tidak merusak fasilitas umum.'
+                ],
+                visualType: 'comparison'
+            },
+            {
+                title: 'Materi 5: Hubungan Hak dan Kewajiban',
+                badge: 'Sintesis & Keseimbangan',
+                icon: '⚖️',
+                definition: 'Hak dan kewajiban harus dijalankan secara seimbang. Seseorang tidak boleh hanya menuntut hak, tetapi harus mengutamakan pelaksanaan kewajibannya.',
+                points: [
+                    'Hubungan Kausalitas: Hak seseorang sering kali lahir dari kewajiban yang dijalankan orang lain, begitu pula sebaliknya.',
+                    'Jika semua warga hanya menuntut hak tanpa menjalankan kewajiban, akan terjadi kekacauan sosial.',
+                    'Prinsip Warga Negara Pancasilais: Mendahulukan kewajiban demi kepentingan bersama, lalu menerima hak secara proporsional.'
+                ],
+                visualType: 'balance'
+            }
+        ];
+
+        function selectMateriTab(idx) {
+            playTone('click');
+            appState.materiStep = idx;
+            renderMateri();
+        }
+
+        function changeMateriStep(delta) {
+            const next = appState.materiStep + delta;
+            if (next >= 0 && next < materiData.length) {
+                playTone('click');
+                appState.materiStep = next;
+                renderMateri();
+            } else if (next >= materiData.length) {
+                appState.completedZones.materi = true;
+                navigateTo('misi1');
+            }
+        }
+
+        function renderMateri() {
+            const idx = appState.materiStep;
+            const item = materiData[idx];
+
+            // Update styling tab buttons
+            document.querySelectorAll('.materi-tab-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.className = 'materi-tab-btn btn-touch p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-navy-900 text-white border-navy-900 shadow-md';
+                } else {
+                    btn.className = 'materi-tab-btn btn-touch p-3.5 rounded-2xl font-bold text-sm sm:text-base text-center border-2 transition-all bg-white text-slate-700 border-slate-200 hover:border-electric-400';
+                }
+            });
+
+            const box = document.getElementById('materi-content-box');
+            let visualHTML = '';
+
+            if (item.visualType === 'hak' || item.visualType === 'kewajiban') {
+                const isHak = item.visualType === 'hak';
+                visualHTML = `
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-7 space-y-5">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${isHak ? 'bg-blue-100 text-electric-500' : 'bg-amber-100 text-amber-800'}">${item.badge}</span>
+                            <h3 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">${item.icon} ${item.title}</h3>
+                            <div class="p-5 rounded-2xl ${isHak ? 'bg-blue-50 border-l-4 border-electric-500' : 'bg-amber-50 border-l-4 border-gold-500'} text-navy-900 font-semibold text-lg leading-relaxed">
+                                "${item.definition}"
+                            </div>
+                            <ul class="space-y-3">
+                                ${item.points.map(p => `
+                                    <li class="flex items-start gap-3 text-slate-700">
+                                        <span class="w-6 h-6 rounded-full ${isHak ? 'bg-electric-500' : 'bg-gold-500'} text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✓</span>
+                                        <span>${p}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <div class="lg:col-span-5 flex justify-center">
+                            <div class="p-6 rounded-3xl ${isHak ? 'bg-gradient-to-br from-blue-500 to-navy-900' : 'bg-gradient-to-br from-amber-500 to-navy-900'} text-white text-center space-y-4 w-full max-w-sm shadow-lg">
+                                <div class="text-6xl">${item.icon}</div>
+                                <div class="font-display font-extrabold text-2xl">${isHak ? 'HAK = DITERIMA' : 'KEWAJIBAN = DILAKSANAKAN'}</div>
+                                <p class="text-sm text-blue-100">${isHak ? 'Diperoleh secara adil sesuai aturan yang berlaku.' : 'Dikerjakan dengan kesadaran dan tanggung jawab.'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (item.visualType === 'comparison') {
+                visualHTML = `
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase bg-indigo-100 text-indigo-700 mb-1">${item.badge}</span>
+                                <h3 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">${item.icon} ${item.title}</h3>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-blue-50/80 border-2 border-blue-200 rounded-3xl p-6 space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-10 h-10 rounded-xl bg-electric-500 text-white font-extrabold flex items-center justify-center">H</span>
+                                    <h4 class="font-display font-extrabold text-xl text-navy-900">Contoh Hak</h4>
+                                </div>
+                                <ul class="space-y-3">
+                                    ${item.hakList.map(h => `
+                                        <li class="bg-white p-3.5 rounded-xl shadow-sm border border-blue-100 flex items-center gap-3 text-slate-800 font-medium text-sm sm:text-base">
+                                            <span class="text-electric-500 font-bold">✦</span>
+                                            <span>${h}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            <div class="bg-amber-50/80 border-2 border-amber-200 rounded-3xl p-6 space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-10 h-10 rounded-xl bg-gold-500 text-navy-900 font-extrabold flex items-center justify-center">K</span>
+                                    <h4 class="font-display font-extrabold text-xl text-navy-900">Contoh Kewajiban</h4>
+                                </div>
+                                <ul class="space-y-3">
+                                    ${item.kewajibanList.map(k => `
+                                        <li class="bg-white p-3.5 rounded-xl shadow-sm border border-amber-100 flex items-center gap-3 text-slate-800 font-medium text-sm sm:text-base">
+                                            <span class="text-amber-600 font-bold">★</span>
+                                            <span>${k}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (item.visualType === 'balance') {
+                visualHTML = `
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-7 space-y-5">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase bg-emerald-100 text-emerald-700">${item.badge}</span>
+                            <h3 class="font-display font-extrabold text-2xl sm:text-3xl text-navy-900">${item.icon} ${item.title}</h3>
+                            <div class="p-5 rounded-2xl bg-navy-900 text-white font-semibold text-lg leading-relaxed border-l-4 border-gold-400">
+                                "${item.definition}"
+                            </div>
+                            <ul class="space-y-3">
+                                ${item.points.map(p => `
+                                    <li class="flex items-start gap-3 text-slate-700">
+                                        <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">⚖</span>
+                                        <span>${p}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <div class="lg:col-span-5 flex flex-col items-center justify-center bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <!-- Diagram Neraca Keseimbangan SVG -->
+                            <svg viewBox="0 0 300 200" class="w-full max-w-xs h-auto">
+                                <!-- Tiang Penyangga -->
+                                <polygon points="130,180 170,180 155,70 145,70" fill="#0A192F"/>
+                                <rect x="100" y="175" width="100" height="12" rx="6" fill="#1D3557"/>
+                                <!-- Palang Neraca Beranimasi -->
+                                <g class="animate-balance">
+                                    <rect x="40" y="66" width="220" height="8" rx="4" fill="#2563EB"/>
+                                    <!-- Piringan Kiri: HAK -->
+                                    <line x1="65" y1="74" x2="50" y2="115" stroke="#64748B" stroke-width="2"/>
+                                    <line x1="65" y1="74" x2="80" y2="115" stroke="#64748B" stroke-width="2"/>
+                                    <rect x="30" y="115" width="70" height="28" rx="8" fill="#2563EB"/>
+                                    <text x="65" y="134" fill="#FFFFFF" font-size="13" font-weight="bold" text-anchor="middle">HAK</text>
+                                    <!-- Piringan Kanan: KEWAJIBAN -->
+                                    <line x1="235" y1="74" x2="220" y2="115" stroke="#64748B" stroke-width="2"/>
+                                    <line x1="235" y1="74" x2="250" y2="115" stroke="#64748B" stroke-width="2"/>
+                                    <rect x="195" y="115" width="80" height="28" rx="8" fill="#F59E0B"/>
+                                    <text x="235" y="134" fill="#0A192F" font-size="12" font-weight="bold" text-anchor="middle">KEWAJIBAN</text>
+                                </g>
+                                <circle cx="150" cy="70" r="10" fill="#F59E0B" stroke="#0A192F" stroke-width="3"/>
+                            </svg>
+                            <p class="text-xs font-bold text-center text-slate-600 mt-2">Keseimbangan dinamis menciptakan harmoni di sekolah & masyarakat</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            box.innerHTML = visualHTML;
+
+            // Update tombol navigasi bawah
+            document.getElementById('prev-materi-btn').disabled = (idx === 0);
+            const nextBtn = document.getElementById('next-materi-btn');
+            if (idx === materiData.length - 1) {
+                nextBtn.innerHTML = 'Selesai Materi & Mulai Misi 1 →';
+                nextBtn.className = 'btn-touch bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-4 rounded-2xl shadow-md';
+            } else {
+                nextBtn.innerHTML = 'Materi Selanjutnya →';
+                nextBtn.className = 'btn-touch bg-electric-500 hover:bg-electric-400 text-white font-bold px-6 py-4 rounded-2xl shadow-md';
+            }
+        }
+
+        // =================================================================
+        // 5. MISI 1: KENALI HAK & KEWAJIBAN (DRAG & DROP + TAP INTERAKTIF)
+        // =================================================================
+        const misi1CardsData = [
+            { id: 1, text: 'Mendapatkan penjelasan materi dari guru.', type: 'HAK', reason: 'Memperoleh ilmu dan pengajaran adalah hak setiap peserta didik di sekolah.' },
+            { id: 2, text: 'Menjaga kebersihan kelas.', type: 'KEWAJIBAN', reason: 'Menjaga kebersihan lingkungan belajar adalah kewajiban bersama warga kelas.' },
+            { id: 3, text: 'Mendapatkan perlakuan adil.', type: 'HAK', reason: 'Setiap siswa dan warga berhak diperlakukan secara adil tanpa diskriminasi.' },
+            { id: 4, text: 'Mematuhi peraturan sekolah.', type: 'KEWAJIBAN', reason: 'Menaati tata tertib merupakan kewajiban agar suasana sekolah tertib dan aman.' },
+            { id: 5, text: 'Menggunakan fasilitas umum dengan baik.', type: 'HAK', reason: 'Warga berhak memanfaatkan fasilitas umum sesuai ketentuan yang berlaku.' },
+            { id: 6, text: 'Menghormati tetangga.', type: 'KEWAJIBAN', reason: 'Menghormati sesama anggota masyarakat adalah kewajiban sosial demi kerukunan.' },
+            { id: 7, text: 'Mendapatkan lingkungan yang aman.', type: 'HAK', reason: 'Rasa aman dan tenteram di lingkungan merupakan hak setiap warga.' },
+            { id: 8, text: 'Mengikuti kegiatan belajar.', type: 'KEWAJIBAN', reason: 'Mengikuti pembelajaran dengan penuh tanggung jawab adalah kewajiban utama pelajar.' }
+        ];
+
+        function resetMisi1() {
+            playTone('click');
+            appState.misi1Placed = {};
+            appState.misi1SelectedCardId = null;
+            document.getElementById('misi1-feedback').classList.add('hidden');
+            document.getElementById('misi1-complete-bar').classList.add('hidden');
+            renderMisi1();
+        }
+
+        function selectMisi1Card(id) {
+            playTone('click');
+            appState.misi1SelectedCardId = (appState.misi1SelectedCardId === id) ? null : id;
+            renderMisi1();
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function handleDragStart(ev, id) {
+            ev.dataTransfer.setData('text/plain', id);
+            appState.misi1SelectedCardId = id;
+        }
+
+        function handleDrop(ev, targetCategory) {
+            ev.preventDefault();
+            const cardId = parseInt(ev.dataTransfer.getData('text/plain') || appState.misi1SelectedCardId, 10);
+            if (!isNaN(cardId)) {
+                evaluateMisi1Placement(cardId, targetCategory);
+            }
+        }
+
+        function handleZoneClick(targetCategory) {
+            if (appState.misi1SelectedCardId !== null) {
+                evaluateMisi1Placement(appState.misi1SelectedCardId, targetCategory);
+            }
+        }
+
+        function evaluateMisi1Placement(cardId, targetCategory) {
+            const card = misi1CardsData.find(c => c.id === cardId);
+            if (!card || appState.misi1Placed[cardId]) return;
+
+            const fb = document.getElementById('misi1-feedback');
+            fb.classList.remove('hidden');
+
+            if (card.type === targetCategory) {
+                playTone('correct');
+                appState.misi1Placed[cardId] = targetCategory;
+                appState.misi1SelectedCardId = null;
+                addTeamPoints(appState.activeTeamIndex, 10, `(Misi 1: ${card.type})`);
+
+                fb.className = 'p-4 rounded-2xl font-semibold text-center text-sm sm:text-base bg-emerald-100 text-emerald-900 border-2 border-emerald-400';
+                fb.innerHTML = `✅ <strong>TEPAT SEKALI!</strong> "${card.text}" termasuk <strong>${card.type}</strong>. ${card.reason}`;
+            } else {
+                playTone('wrong');
+                fb.className = 'p-4 rounded-2xl font-semibold text-center text-sm sm:text-base bg-rose-100 text-rose-900 border-2 border-rose-400';
+                fb.innerHTML = `❌ <strong>KURANG TEPAT!</strong> "${card.text}" bukan termasuk ${targetCategory}. Coba perhatikan kembali apakah pernyataan tersebut sesuatu yang <em>diterima</em> atau <em>harus dilaksanakan</em>!`;
+            }
+
+            renderMisi1();
+        }
+
+        function renderMisi1() {
+            const pool = document.getElementById('misi1-cards-pool');
+            const listHak = document.getElementById('list-HAK');
+            const listKewajiban = document.getElementById('list-KEWAJIBAN');
+
+            const unplaced = misi1CardsData.filter(c => !appState.misi1Placed[c.id]);
+            const hakItems = misi1CardsData.filter(c => appState.misi1Placed[c.id] === 'HAK');
+            const kewajibanItems = misi1CardsData.filter(c => appState.misi1Placed[c.id] === 'KEWAJIBAN');
+
+            document.getElementById('misi1-remaining').textContent = unplaced.length;
+            document.getElementById('count-HAK').textContent = hakItems.length;
+            document.getElementById('count-KEWAJIBAN').textContent = kewajibanItems.length;
+
+            pool.innerHTML = unplaced.map(c => {
+                const isSelected = appState.misi1SelectedCardId === c.id;
+                return `
+                    <div draggable="true"
+                         ondragstart="handleDragStart(event, ${c.id})"
+                         onclick="selectMisi1Card(${c.id})"
+                         class="stmt-card btn-touch cursor-pointer p-4 rounded-2xl border-2 ${isSelected ? 'selected' : 'border-slate-200 bg-slate-50 hover:border-electric-400'} shadow-sm flex items-center justify-between gap-2">
+                        <span class="font-semibold text-navy-900 text-sm sm:text-base">${c.text}</span>
+                        <span class="text-xs font-bold text-slate-400 shrink-0">☰</span>
+                    </div>
+                `;
+            }).join('');
+
+            listHak.innerHTML = hakItems.map(c => `
+                <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-sm flex items-center gap-2 text-sm font-semibold text-navy-900">
+                    <span class="text-emerald-600 font-extrabold">✓</span>
+                    <span>${c.text}</span>
+                </div>
+            `).join('');
+
+            listKewajiban.innerHTML = kewajibanItems.map(c => `
+                <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm flex items-center gap-2 text-sm font-semibold text-navy-900">
+                    <span class="text-emerald-600 font-extrabold">✓</span>
+                    <span>${c.text}</span>
+                </div>
+            `).join('');
+
+            if (unplaced.length === 0) {
+                appState.completedZones.misi1 = true;
+                document.getElementById('misi1-complete-bar').classList.remove('hidden');
+            }
+        }
+
+        // =================================================================
+        // 6. MISI 2: TANTANGAN WARGA SEKOLAH (4 KASUS SITUASIONAL)
+        // =================================================================
+        const misi2Cases = [
+            {
+                title: 'Kasus 1: Kenyamanan Belajar di Kelas',
+                situation: 'Seorang siswa ingin belajar dengan nyaman dan memahami penjelasan pelajaran, tetapi ia sendiri sering mengobrol dan membuat keributan ketika guru sedang menjelaskan.',
+                options: [
+                    {
+                        text: 'Menuntut guru mengulang penjelasan terus-menerus sambil tetap mengobrol.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Menuntut hak mendapatkan penjelasan tanpa menjalankan kewajiban memperhatikan guru justru merugikan diri sendiri dan teman sekelas.'
+                    },
+                    {
+                        text: 'Menjaga ketenangan saat guru menjelaskan dan mencatat materi dengan tertib.',
+                        isCorrect: true,
+                        explanation: 'Tepat sekali! Dengan melaksanakan kewajiban menjaga ketertiban kelas, hak untuk belajar dengan nyaman akan terwujud bagi semua siswa.'
+                    },
+                    {
+                        text: 'Menyalahkan teman sebangku karena suasana kelas menjadi tidak kondusif.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Menyalahkan orang lain tidak menyelesaikan masalah; setiap siswa wajib bertanggung jawab atas perilakunya sendiri.'
+                    }
+                ]
+            },
+            {
+                title: 'Kasus 2: Tanggung Jawab di Perpustakaan',
+                situation: 'Seorang siswa menggunakan fasilitas perpustakaan sekolah untuk membaca dan mengerjakan tugas, tetapi setelah selesai ia meninggalkan buku berserakan di meja tanpa mengembalikannya ke rak semula.',
+                options: [
+                    {
+                        text: 'Merapikan dan mengembalikan buku ke rak sesuai klasifikasinya setelah selesai membaca.',
+                        isCorrect: true,
+                        explanation: 'Tepat sekali! Menggunakan fasilitas sekolah adalah hak siswa, namun merawat serta merapikannya kembali adalah kewajiban agar siswa lain juga dapat menggunakannya.'
+                    },
+                    {
+                        text: 'Membiarkannya saja karena sudah ada petugas perpustakaan yang bertugas merapikan.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Keberadaan petugas tidak menghilangkan kewajiban siswa untuk menjaga kerapian dan mematuhi tata tertib perpustakaan.'
+                    },
+                    {
+                        text: 'Membawa pulang buku tersebut tanpa melapor agar mudah dibaca besok.',
+                        isCorrect: false,
+                        explanation: 'Tidak tepat. Mengambil fasilitas umum tanpa prosedur peminjaman melanggar tata tertib dan merampas hak siswa lain.'
+                    }
+                ]
+            },
+            {
+                title: 'Kasus 3: Kepedulian Kebersihan Kelas',
+                situation: 'Sekelompok siswa melihat sampah plastik berserakan di lantai kelas sebelum jam pelajaran dimulai, tetapi mereka saling menunggu dan menyuruh teman lain untuk membersihkannya.',
+                options: [
+                    {
+                        text: 'Menunggu petugas kebersihan sekolah datang membersihkan meskipun jam pelajaran segera dimulai.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Kebersihan ruang kelas adalah tanggung jawab bersama seluruh penghuni kelas, bukan hanya petugas kebersihan.'
+                    },
+                    {
+                        text: 'Membiarkan sampah tersebut karena merasa bukan sampah milik mereka pribadi.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Sikap apatis menghambat terciptanya lingkungan belajar yang bersih dan sehat.'
+                    },
+                    {
+                        text: 'Berinisiatif memungut sampah bersama-sama dan mengingatkan anggota kelas menjaga kebersihan.',
+                        isCorrect: true,
+                        explanation: 'Tepat sekali! Kepedulian dan kerja sama melaksanakan kewajiban menjaga kebersihan akan menghadirkan hak berupa ruang kelas yang sehat dan nyaman.'
+                    }
+                ]
+            },
+            {
+                title: 'Kasus 4: Menghargai Pendapat dalam Diskusi',
+                situation: 'Dalam diskusi kelompok, seorang siswa menuntut agar usulannya selalu diterima dan diperlakukan adil, tetapi ia sering memotong pembicaraan dan meremehkan pendapat temannya.',
+                options: [
+                    {
+                        text: 'Mendengarkan pendapat teman dengan santun dan bermusyawarah mencari kesepakatan terbaik.',
+                        isCorrect: true,
+                        explanation: 'Tepat sekali! Hak untuk berpendapat dan diperlakukan adil harus diimbangi dengan kewajiban menghormati hak berpendapat orang lain.'
+                    },
+                    {
+                        text: 'Memaksakan kehendak agar kelompok mengikuti idenya demi efisiensi waktu.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Memaksakan pendapat melanggar prinsip demokrasi dan keadilan dalam kerja kelompok.'
+                    },
+                    {
+                        text: 'Keluar dari kelompok karena teman-teman tidak langsung menyetujui idenya.',
+                        isCorrect: false,
+                        explanation: 'Kurang tepat. Menghindari diskusi bukan bentuk tanggung jawab dalam menyelesaikan tugas kolaboratif.'
+                    }
+                ]
+            }
+        ];
+
+        function selectMisi2Case(idx) {
+            playTone('click');
+            appState.misi2CurrentCase = idx;
+            renderMisi2();
+        }
+
+        function answerMisi2(optionIdx) {
+            const cIdx = appState.misi2CurrentCase;
+            const prevAns = appState.misi2Answered[cIdx];
+            appState.misi2Answered[cIdx] = optionIdx;
+
+            const chosen = misi2Cases[cIdx].options[optionIdx];
+            if (chosen.isCorrect) {
+                playTone('correct');
+                if (prevAns === undefined || !misi2Cases[cIdx].options[prevAns].isCorrect) {
+                    addTeamPoints(appState.activeTeamIndex, 10, `(Misi 2 Kasus ${cIdx + 1})`);
+                }
+            } else {
+                playTone('wrong');
+            }
+
+            // Cek jika semua 4 kasus sudah dijawab benar
+            const allCorrect = misi2Cases.every((c, i) => {
+                const ans = appState.misi2Answered[i];
+                return ans !== undefined && c.options[ans].isCorrect;
+            });
+            if (allCorrect) appState.completedZones.misi2 = true;
+
+            renderMisi2();
+        }
+
+        function renderMisi2() {
+            const cIdx = appState.misi2CurrentCase;
+            const current = misi2Cases[cIdx];
+            const selectedOpt = appState.misi2Answered[cIdx];
+
+            // Render indikator 1-4
+            document.getElementById('misi2-indicators').innerHTML = misi2Cases.map((c, i) => {
+                const ans = appState.misi2Answered[i];
+                const isDone = ans !== undefined && c.options[ans].isCorrect;
+                const isCurrent = i === cIdx;
+                return `
+                    <button onclick="selectMisi2Case(${i})" class="btn-touch p-3 rounded-2xl font-bold text-xs sm:text-sm border-2 transition-all ${
+                        isCurrent
+                            ? 'bg-navy-900 text-white border-navy-900 shadow-md'
+                            : isDone
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-400'
+                                : 'bg-white text-slate-600 border-slate-200'
+                    }">
+                        Kasus ${i + 1} ${isDone ? '✓' : ''}
+                    </button>
+                `;
+            }).join('');
+
+            // Render isi kasus
+            const card = document.getElementById('misi2-card');
+            let feedbackHTML = '';
+            if (selectedOpt !== undefined) {
+                const opt = current.options[selectedOpt];
+                feedbackHTML = `
+                    <div class="p-5 rounded-2xl border-2 ${opt.isCorrect ? 'bg-emerald-50 border-emerald-400 text-emerald-900' : 'bg-rose-50 border-rose-400 text-rose-900'}">
+                        <div class="font-display font-extrabold text-lg mb-1">${opt.isCorrect ? '✅ Analisis Keputusan Tepat!' : '⚠️ Evaluasi Keputusan'}</div>
+                        <p class="text-sm sm:text-base leading-relaxed">${opt.explanation}</p>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="space-y-3">
+                    <span class="bg-emerald-100 text-emerald-800 font-bold text-xs px-3 py-1 rounded-full uppercase">Situasi Sekolah #${cIdx + 1}</span>
+                    <h3 class="font-display font-extrabold text-2xl text-navy-900">${current.title}</h3>
+                    <div class="bg-slate-50 p-5 rounded-2xl border-l-4 border-electric-500 text-slate-800 font-medium text-base sm:text-lg leading-relaxed">
+                        "${current.situation}"
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <p class="font-bold text-sm text-slate-500 uppercase">Pilih Tindakan Paling Tepat:</p>
+                    ${current.options.map((opt, idx) => {
+                        let btnStyle = 'bg-white border-slate-200 hover:border-electric-400 text-slate-800';
+                        if (selectedOpt === idx) {
+                            btnStyle = opt.isCorrect
+                                ? 'bg-emerald-500 border-emerald-600 text-white shadow-md'
+                                : 'bg-rose-500 border-rose-600 text-white shadow-md';
+                        }
+                        return `
+                            <button onclick="answerMisi2(${idx})" class="btn-touch w-full text-left p-4 sm:p-5 rounded-2xl border-2 font-semibold text-sm sm:text-base transition-all flex items-center gap-4 ${btnStyle}">
+                                <span class="w-9 h-9 rounded-xl ${selectedOpt === idx ? 'bg-white/20 text-white' : 'bg-slate-100 text-navy-900'} font-extrabold flex items-center justify-center shrink-0">
+                                    ${String.fromCharCode(65 + idx)}
+                                </span>
+                                <span>${opt.text}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+
+                ${feedbackHTML}
+
+                <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                    <button onclick="selectMisi2Case(${Math.max(0, cIdx - 1)})" ${cIdx === 0 ? 'disabled' : ''} class="btn-touch px-5 py-3 rounded-xl font-bold bg-slate-100 text-slate-700 disabled:opacity-40">
+                        ← Kasus Sebelumnya
+                    </button>
+                    ${cIdx < misi2Cases.length - 1
+                        ? `<button onclick="selectMisi2Case(${cIdx + 1})" class="btn-touch px-6 py-3 rounded-xl font-bold bg-electric-500 text-white shadow-sm">Kasus Selanjutnya →</button>`
+                        : `<button onclick="navigateTo('misi3')" class="btn-touch px-6 py-3 rounded-xl font-bold bg-emerald-600 text-white shadow-md">Lanjut ke Misi 3 →</button>`
+                    }
+                </div>
+            `;
+        }
+
+        // =================================================================
+        // 7. MISI 3: TANTANGAN WARGA MASYARAKAT (4 KASUS - 3 ASPEK ANALISIS)
+        // =================================================================
+        const misi3Cases = [
+            {
+                title: 'Kasus 1: Pencemaran Sungai',
+                scenario: 'Sejumlah warga membuang sampah rumah tangga secara sembarangan ke aliran sungai di sekitar permukiman sehingga menyebabkan air tercemar dan rawan banjir saat hujan deras.',
+                hak: {
+                    question: '1. Hak masyarakat apa yang terganggu akibat peristiwa ini?',
+                    options: [
+                        'Hak mendapatkan lingkungan hidup yang bersih, sehat, dan bebas banjir.',
+                        'Hak untuk membuang limbah di mana saja tanpa batasan.'
+                    ],
+                    correctIdx: 0
+                },
+                kewajiban: {
+                    question: '2. Kewajiban apa yang seharusnya dilaksanakan oleh warga?',
+                    options: [
+                        'Menunggu pemerintah membersihkan sungai tanpa mengubah kebiasaan.',
+                        'Menjaga kebersihan lingkungan dan membuang sampah pada tempatnya.'
+                    ],
+                    correctIdx: 1
+                },
+                solusi: {
+                    question: '3. Tindakan penyelesaian yang paling tepat adalah...',
+                    options: [
+                        'Mengadakan kerja bakti membersihkan sungai dan membuat kesepakatan pengelolaan sampah warga.',
+                        'Memindahkan sampah ke wilayah kelurahan tetangga agar lingkungan sendiri bersih.'
+                    ],
+                    correctIdx: 0
+                }
+            },
+            {
+                title: 'Kasus 2: Vandalisme Fasilitas Taman Umum',
+                scenario: 'Sekelompok remaja menggunakan fasilitas taman kota untuk berkumpul, tetapi mereka mencoret-coret bangku taman dan merusak tanaman hias yang ada di sekitar taman.',
+                hak: {
+                    question: '1. Hak warga masyarakat yang berkaitan dengan kasus ini adalah...',
+                    options: [
+                        'Hak menggunakan dan menikmati fasilitas umum yang terawat dan nyaman.',
+                        'Hak mengubah bentuk fasilitas umum sesuai selera pribadi.'
+                    ],
+                    correctIdx: 0
+                },
+                kewajiban: {
+                    question: '2. Kewajiban yang dilalaikan oleh remaja tersebut adalah...',
+                    options: [
+                        'Kewajiban membayar tiket masuk taman setiap hari.',
+                        'Kewajiban menjaga dan merawat fasilitas umum serta menaati aturan taman.'
+                    ],
+                    correctIdx: 1
+                },
+                solusi: {
+                    question: '3. Tindakan penyelesaian yang paling konstruktif adalah...',
+                    options: [
+                        'Menutup taman umum selamanya agar tidak ada lagi yang datang.',
+                        'Memberikan teguran edukatif, mewajibkan pembersihan/perbaikan, dan menumbuhkan kesadaran menjaga fasilitas publik.'
+                    ],
+                    correctIdx: 1
+                }
+            },
+            {
+                title: 'Kasus 3: Keamanan & Ketertiban Lingkungan',
+                scenario: 'Seorang warga selalu menuntut lingkungan perumahannya aman dari tindak pencurian, tetapi ia menolak berpartisipasi dalam jadwal ronda malam maupun iuran keamanan lingkungan tanpa alasan yang jelas.',
+                hak: {
+                    question: '1. Hak yang diinginkan oleh warga tersebut adalah...',
+                    options: [
+                        'Hak memperoleh rasa aman dan perlindungan di lingkungan tempat tinggal.',
+                        'Hak bebas dari segala aturan kesepakatan warga.'
+                    ],
+                    correctIdx: 0
+                },
+                kewajiban: {
+                    question: '2. Kewajiban warga masyarakat yang diabaikan adalah...',
+                    options: [
+                        'Kewajiban bekerja sebagai petugas keamanan profesional.',
+                        'Kewajiban berpartisipasi aktif menjaga ketertiban dan keamanan lingkungan bersama.'
+                    ],
+                    correctIdx: 1
+                },
+                solusi: {
+                    question: '3. Tindakan penyelesaian yang tepat dalam kehidupan bermasyarakat adalah...',
+                    options: [
+                        'Mengajak warga tersebut bermusyawarah agar memahami bahwa keamanan terwujud lewat tanggung jawab bersama.',
+                        'Mengucilkan warga tersebut dari seluruh kegiatan sosial.'
+                    ],
+                    correctIdx: 0
+                }
+            },
+            {
+                title: 'Kasus 4: Kebebasan Berpendapat di Ruang Publik',
+                scenario: 'Dalam rapat warga maupun media sosial lingkungan, seorang warga menyampaikan kritik terhadap pengurus RT dengan kata-kata kasar yang menghina martabat orang lain.',
+                hak: {
+                    question: '1. Hak konstitusional yang sedang digunakan warga tersebut adalah...',
+                    options: [
+                        'Hak menyampaikan pendapat dan aspirasi di muka umum.',
+                        'Hak merendahkan martabat orang lain saat berbeda pandangan.'
+                    ],
+                    correctIdx: 0
+                },
+                kewajiban: {
+                    question: '2. Kewajiban yang harus menyertai hak menyampaikan pendapat adalah...',
+                    options: [
+                        'Kewajiban memaksakan pendapat hingga diterima semua orang.',
+                        'Kewajiban menghormati hak dan martabat orang lain serta menyampaikan pendapat secara santun.'
+                    ],
+                    correctIdx: 1
+                },
+                solusi: {
+                    question: '3. Tindakan penyelesaian yang bijaksana adalah...',
+                    options: [
+                        'Melarang seluruh warga menyampaikan kritik dalam rapat berikutnya.',
+                        'Menyampaikan permohonan maaf dan membiasakan penyampaian aspirasi secara santun dan solutif.'
+                    ],
+                    correctIdx: 1
+                }
+            }
+        ];
+
+        function selectMisi3Case(idx) {
+            playTone('click');
+            appState.misi3CurrentCase = idx;
+            renderMisi3();
+        }
+
+        function answerMisi3Aspect(aspectKey, optIdx) {
+            const cIdx = appState.misi3CurrentCase;
+            if (!appState.misi3Answered[cIdx]) appState.misi3Answered[cIdx] = {};
+
+            const isCorrect = misi3Cases[cIdx][aspectKey].correctIdx === optIdx;
+            const wasAlreadyCorrect = appState.misi3Answered[cIdx][aspectKey] === true;
+
+            appState.misi3Answered[cIdx][aspectKey] = isCorrect;
+
+            if (isCorrect) {
+                playTone('correct');
+                // Jika ketiga aspek pada kasus ini benar semua, berikan bonus +20 poin analisis kasus
+                const ansObj = appState.misi3Answered[cIdx];
+                if (!wasAlreadyCorrect && ansObj.hak === true && ansObj.kewajiban === true && ansObj.solusi === true) {
+                    addTeamPoints(appState.activeTeamIndex, 20, `(Analisis Lengkap Misi 3 Kasus ${cIdx + 1})`);
+                }
+            } else {
+                playTone('wrong');
+            }
+
+            // Cek penyelesaian seluruh Misi 3
+            const allCasesDone = misi3Cases.every((_, i) => {
+                const a = appState.misi3Answered[i];
+                return a && a.hak && a.kewajiban && a.solusi;
+            });
+            if (allCasesDone) appState.completedZones.misi3 = true;
+
+            renderMisi3();
+        }
+
+        function renderMisi3() {
+            const cIdx = appState.misi3CurrentCase;
+            const current = misi3Cases[cIdx];
+            const ansState = appState.misi3Answered[cIdx] || {};
+
+            // Render Tabs
+            document.getElementById('misi3-tabs').innerHTML = misi3Cases.map((c, i) => {
+                const a = appState.misi3Answered[i];
+                const done = a && a.hak && a.kewajiban && a.solusi;
+                return `
+                    <button onclick="selectMisi3Case(${i})" class="btn-touch p-3.5 rounded-2xl font-bold text-xs sm:text-sm border-2 transition-all ${
+                        i === cIdx
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                            : done
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-400'
+                                : 'bg-white text-slate-700 border-slate-200'
+                    }">
+                        Kasus ${i + 1} ${done ? '✓' : ''}
+                    </button>
+                `;
+            }).join('');
+
+            const aspects = [
+                { key: 'hak', badge: 'Aspek 1: Hak Terkait', color: 'blue', data: current.hak },
+                { key: 'kewajiban', badge: 'Aspek 2: Kewajiban Warga', color: 'amber', data: current.kewajiban },
+                { key: 'solusi', badge: 'Aspek 3: Tindakan Penyelesaian', color: 'emerald', data: current.solusi }
+            ];
+
+            const isCaseComplete = ansState.hak && ansState.kewajiban && ansState.solusi;
+
+            document.getElementById('misi3-container').innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold text-xs px-3 py-1 rounded-full uppercase">Studi Kasus Masyarakat #${cIdx + 1}</span>
+                        <span class="text-xs font-bold text-emerald-600">+20 Poin jika 3 aspek terjawab tepat</span>
+                    </div>
+                    <h3 class="font-display font-extrabold text-2xl text-navy-900">${current.title}</h3>
+                    <div class="bg-slate-50 p-5 rounded-2xl border-l-4 border-indigo-600 text-slate-800 font-medium text-base sm:text-lg leading-relaxed">
+                        "${current.scenario}"
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    ${aspects.map(asp => {
+                        const status = ansState[asp.key]; // true | false | undefined
+                        return `
+                            <div class="p-5 rounded-2xl border-2 ${status === true ? 'border-emerald-400 bg-emerald-50/40' : 'border-slate-200 bg-white'} flex flex-col justify-between space-y-4">
+                                <div class="space-y-2">
+                                    <span class="text-xs font-extrabold uppercase text-indigo-600">${asp.badge}</span>
+                                    <h4 class="font-bold text-navy-900 text-sm sm:text-base">${asp.data.question}</h4>
+                                </div>
+                                <div class="space-y-2">
+                                    ${asp.data.options.map((optText, oIdx) => {
+                                        const isRightChoice = asp.data.correctIdx === oIdx;
+                                        let style = 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700';
+                                        if (status === true && isRightChoice) {
+                                            style = 'bg-emerald-600 border-emerald-600 text-white font-bold';
+                                        } else if (status === false && !isRightChoice) {
+                                            style = 'bg-rose-100 border-rose-400 text-rose-800';
+                                        }
+                                        return `
+                                            <button onclick="answerMisi3Aspect('${asp.key}', ${oIdx})" class="btn-touch w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all">
+                                                ${optText}
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                ${status === true ? '<div class="text-xs font-bold text-emerald-700">✅ Analisis Tepat!</div>' : status === false ? '<div class="text-xs font-bold text-rose-600">❌ Coba pilih opsi yang lebih tepat.</div>' : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                ${isCaseComplete ? `
+                    <div class="bg-emerald-600 text-white p-4 rounded-2xl font-bold text-center text-sm sm:text-base">
+                        🎉 Analisis Kasus ${cIdx + 1} Lengkap! Kalian berhasil mengidentifikasi keseimbangan hak, kewajiban, dan solusi sosial.
+                    </div>
+                ` : ''}
+
+                <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                    <button onclick="selectMisi3Case(${Math.max(0, cIdx - 1)})" ${cIdx === 0 ? 'disabled' : ''} class="btn-touch px-5 py-3 rounded-xl font-bold bg-slate-100 text-slate-700 disabled:opacity-40">
+                        ← Kasus Sebelumnya
+                    </button>
+                    ${cIdx < misi3Cases.length - 1
+                        ? `<button onclick="selectMisi3Case(${cIdx + 1})" class="btn-touch px-6 py-3 rounded-xl font-bold bg-indigo-600 text-white shadow-sm">Kasus Selanjutnya →</button>`
+                        : `<button onclick="navigateTo('misi4')" class="btn-touch px-6 py-3 rounded-xl font-bold bg-emerald-600 text-white shadow-md">Lanjut ke Misi 4 (Detektif Kasus) →</button>`
+                    }
+                </div>
+            `;
+        }
+
+        // =================================================================
+        // 8. MISI 4: DETEKTIF KASUS (PROBLEM BASED LEARNING)
+        // =================================================================
+        function toggleDetectiveDiscussion() {
+            playTone('click');
+            const placeholder = document.getElementById('detective-placeholder');
+            const answerKey = document.getElementById('detective-answer-key');
+            const btn = document.getElementById('btn-toggle-pembahasan');
+
+            const isHidden = answerKey.classList.contains('hidden');
+            if (isHidden) {
+                answerKey.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                btn.innerHTML = '🙈 SEMBUNYIKAN PEMBAHASAN';
+                appState.completedZones.misi4 = true;
+            } else {
+                answerKey.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                btn.innerHTML = '🔍 TAMPILKAN PEMBAHASAN';
+            }
+        }
+
+        function awardDetectiveBonus() {
+            playTone('correct');
+            appState.completedZones.misi4 = true;
+            addTeamPoints(appState.activeTeamIndex, 20, '(Analisis Detektif Kasus)');
+        }
+
+        function completeMisi4AndNext() {
+            appState.completedZones.misi4 = true;
+            navigateTo('kuis');
+        }
+
+        // =================================================================
+        // 9. ARENA KUIS (10 SOAL PILIHAN GANDA ANALISIS & KONSEP)
+        // =================================================================
+        const quizQuestions = [
+            {
+                question: '1. Sesuatu yang pantas diterima, dimiliki, atau diperoleh seseorang sesuai dengan ketentuan dan norma yang berlaku disebut...',
+                options: ['Kewajiban', 'Hak', 'Tanggung jawab', 'Sanksi sosial'],
+                correctIdx: 1,
+                explanation: 'Hak adalah segala sesuatu yang pantas diterima atau diperoleh seseorang sesuai ketentuan yang berlaku.'
+            },
+            {
+                question: '2. Manakah pernyataan berikut yang merupakan contoh kewajiban peserta didik di lingkungan sekolah?',
+                options: [
+                    'Mendapatkan bimbingan belajar dari guru mata pelajaran',
+                    'Menggunakan fasilitas laboratorium komputer saat praktik',
+                    'Mematuhi tata tertib sekolah dan menjaga kebersihan kelas',
+                    'Menyampaikan usulan kegiatan OSIS secara santun'
+                ],
+                correctIdx: 2,
+                explanation: 'Mematuhi tata tertib dan menjaga kebersihan merupakan kewajiban yang harus dilaksanakan siswa, sedangkan opsi lainnya adalah hak siswa.'
+            },
+            {
+                question: '3. Rina selalu menuntut agar teman-temannya mendengarkan pendapatnya saat diskusi kelas, namun ia sering bermain ponsel ketika temannya berbicara. Sikap Rina menunjukkan...',
+                options: [
+                    'Pelaksanaan hak dan kewajiban yang sudah seimbang',
+                    'Ketidakseimbangan karena menuntut hak tanpa melaksanakan kewajiban menghargai orang lain',
+                    'Bentuk kebebasan berpendapat yang dijamin oleh tata tertib',
+                    'Upaya mempertahankan hak asasi di lingkungan sekolah'
+                ],
+                correctIdx: 1,
+                explanation: 'Hak untuk didengarkan harus diimbangi dengan kewajiban menghargai dan mendengarkan pendapat orang lain.'
+            },
+            {
+                question: '4. Di lingkungan masyarakat, setiap warga berhak mendapatkan udara bersih dan lingkungan yang sehat. Kewajiban yang paling relevan untuk mewujudkan hak tersebut adalah...',
+                options: [
+                    'Menuntut petugas kebersihan bekerja selama 24 jam',
+                    'Tidak membuang sampah sembarangan dan ikut menjaga kelestarian lingkungan',
+                    'Membakar sampah plastik di halaman rumah setiap sore',
+                    'Menutup akses jalan umum agar kendaraan tidak melintas'
+                ],
+                correctIdx: 1,
+                explanation: 'Hak atas lingkungan sehat terwujud apabila warga menjalankan kewajiban menjaga kebersihan dan tidak mencemari lingkungan.'
+            },
+            {
+                question: '5. Mengapa pelaksanaan hak dan kewajiban dalam kehidupan bernegara harus berjalan secara seimbang?',
+                options: [
+                    'Agar warga negara dapat menuntut hak sebanyak-banyaknya',
+                    'Supaya kewajiban hanya dibebankan kepada pengurus lingkungan',
+                    'Untuk mencegah benturan kepentingan dan menciptakan ketertiban serta keadilan bersama',
+                    'Karena hak selalu lebih penting dibandingkan kewajiban'
+                ],
+                correctIdx: 2,
+                explanation: 'Keseimbangan antara hak dan kewajiban mencegah pelanggaran hak orang lain serta menciptakan harmoni sosial.'
+            },
+            {
+                question: '6. Fasilitas halte bus dan taman kota dibangun menggunakan dana publik untuk kenyamanan masyarakat. Perilaku warga negara yang bertanggung jawab terhadap fasilitas tersebut adalah...',
+                options: [
+                    'Menggunakannya sesuai fungsi dan tidak melakukan aksi vandalisme',
+                    'Memarkir kendaraan pribadi di dalam area taman agar aman',
+                    'Mengambil bagian bangku taman untuk keperluan pribadi',
+                    'Membiarkan sampah berserakan karena sudah membayar pajak'
+                ],
+                correctIdx: 0,
+                explanation: 'Membayar pajak tidak menggugurkan kewajiban menjaga dan merawat fasilitas umum agar tetap layak digunakan bersama.'
+            },
+            {
+                question: '7. Andi melihat keran air di toilet sekolah dibiarkan terbuka hingga air meluap membasahi lantai. Tindakan yang mencerminkan pelaksanaan kewajiban warga sekolah adalah...',
+                options: [
+                    'Segera menutup keran air tersebut dan mengingatkan teman agar hemat air',
+                    'Mengabaikannya karena bukan Andi yang membuka keran tersebut',
+                    'Merekamnya untuk bahan candaan di media sosial',
+                    'Menunggu sampai jam pulang sekolah tiba'
+                ],
+                correctIdx: 0,
+                explanation: 'Menjaga fasilitas sekolah dan menghemat sumber daya adalah wujud nyata tanggung jawab warga sekolah.'
+            },
+            {
+                question: '8. Berikut ini yang merupakan contoh hak warga negara di lingkungan masyarakat adalah...',
+                options: [
+                    'Membayar iuran keamanan lingkungan tepat waktu',
+                    'Mengikuti kegiatan kerja bakti membersihkan saluran air',
+                    'Memperoleh pelayanan administrasi kependudukan secara adil',
+                    'Menghormati tetangga yang berbeda latar belakang budaya'
+                ],
+                correctIdx: 2,
+                explanation: 'Memperoleh pelayanan publik secara adil adalah hak warga masyarakat, sedangkan opsi A, B, dan D adalah kewajiban.'
+            },
+            {
+                question: '9. Apabila sebagian besar warga di suatu wilayah hanya menuntut hak tanpa mau melaksanakan kewajibannya, dampak yang paling mungkin terjadi adalah...',
+                options: [
+                    'Terciptanya kerukunan dan solidaritas sosial yang tinggi',
+                    'Timbulnya konflik sosial, ketidakadilan, dan terganggunya ketertiban umum',
+                    'Peningkatan kualitas fasilitas umum secara otomatis',
+                    'Berkurangnya tanggung jawab pemerintah dan masyarakat'
+                ],
+                correctIdx: 1,
+                explanation: 'Pengabaian kewajiban akan merampas hak warga lainnya sehingga memicu ketidaktertiban dan konflik.'
+            },
+            {
+                question: '10. Prinsip utama yang harus dipegang oleh seorang pelajar SMA sebagai warga negara yang baik adalah...',
+                options: [
+                    'Mendahulukan penuntutan hak sebelum menjalankan tugas',
+                    'Menjalankan kewajiban dengan penuh tanggung jawab seiring pemenuhan hak secara proporsional',
+                    'Menghindari peraturan yang dianggap membatasi kebebasan pribadi',
+                    'Hanya peduli pada hak diri sendiri dan kelompoknya'
+                ],
+                correctIdx: 1,
+                explanation: 'Warga negara yang baik senantiasa mengutamakan tanggung jawab pelaksanaan kewajiban demi kebaikan bersama.'
+            }
+        ];
+
+        function selectQuizOption(optIdx) {
+            const qIdx = appState.quizCurrentIdx;
+            if (appState.quizAnswered[qIdx] !== undefined) return; // Kunci jawaban setelah memilih
+
+            appState.quizAnswered[qIdx] = optIdx;
+            const currentQ = quizQuestions[qIdx];
+            const isCorrect = currentQ.correctIdx === optIdx;
+
+            if (isCorrect) {
+                playTone('correct');
+                appState.quizScore += 10;
+                addTeamPoints(appState.activeTeamIndex, 10, `(Kuis Soal #${qIdx + 1})`);
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 55, spread: 60, origin: { y: 0.7 } });
+                }
+            } else {
+                playTone('wrong');
+            }
+
+            if (Object.keys(appState.quizAnswered).length === quizQuestions.length) {
+                appState.completedZones.kuis = true;
+            }
+
+            renderQuiz();
+        }
+
+        function changeQuizStep(delta) {
+            const next = appState.quizCurrentIdx + delta;
+            if (next >= 0 && next < quizQuestions.length) {
+                playTone('click');
+                appState.quizCurrentIdx = next;
+                renderQuiz();
+            }
+        }
+
+        function resetQuiz() {
+            playTone('click');
+            appState.quizCurrentIdx = 0;
+            appState.quizScore = 0;
+            appState.quizAnswered = {};
+            renderQuiz();
+        }
+
+        function renderQuiz() {
+            const qIdx = appState.quizCurrentIdx;
+            const total = quizQuestions.length;
+            const currentQ = quizQuestions[qIdx];
+            const userAns = appState.quizAnswered[qIdx];
+            const answeredCount = Object.keys(appState.quizAnswered).length;
+
+            // Update Progress Bar & Score
+            document.getElementById('quiz-progress-text').textContent = `Soal ${qIdx + 1} dari ${total}`;
+            document.getElementById('quiz-score-badge').textContent = `Skor Kuis: ${appState.quizScore} / ${total * 10}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((qIdx + 1) / total) * 100}%`;
+
+            const box = document.getElementById('quiz-box');
+
+            // Jika semua soal selesai dan user menekan lihat hasil akhir
+            if (qIdx === total - 1 && userAns !== undefined && answeredCount === total) {
+                // Tampilkan soal terakhir beserta kartu ringkasan hasil akhir
+            }
+
+            let explanationHTML = '';
+            if (userAns !== undefined) {
+                const isRight = userAns === currentQ.correctIdx;
+                explanationHTML = `
+                    <div class="mt-6 p-5 rounded-2xl border-2 ${isRight ? 'bg-emerald-50 border-emerald-400 text-emerald-900' : 'bg-rose-50 border-rose-400 text-rose-900'}">
+                        <div class="font-display font-extrabold text-lg mb-1">
+                            ${isRight ? '🎉 Jawaban Benar! (+10 Poin)' : '❌ Jawaban Kurang Tepat'}
+                        </div>
+                        <p class="text-sm sm:text-base">${currentQ.explanation}</p>
+                    </div>
+                `;
+            }
+
+            const isAllFinished = answeredCount === total;
+
+            box.innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="bg-blue-100 text-electric-500 font-bold text-xs px-3 py-1 rounded-full uppercase">Pertanyaan Analisis #${qIdx + 1}</span>
+                        <span class="text-xs font-semibold text-slate-500">${answeredCount} dari ${total} soal terjawab</span>
+                    </div>
+
+                    <h3 class="font-display font-extrabold text-xl sm:text-2xl text-navy-900 leading-snug">
+                        ${currentQ.question}
+                    </h3>
+
+                    <div class="grid grid-cols-1 gap-3.5">
+                        ${currentQ.options.map((opt, idx) => {
+                            let btnClass = 'bg-slate-50 hover:bg-blue-50 border-slate-200 hover:border-electric-400 text-slate-800';
+                            if (userAns !== undefined) {
+                                if (idx === currentQ.correctIdx) {
+                                    btnClass = 'bg-emerald-500 border-emerald-600 text-white shadow-md';
+                                } else if (idx === userAns) {
+                                    btnClass = 'bg-rose-500 border-rose-600 text-white shadow-md';
+                                } else {
+                                    btnClass = 'bg-slate-100 border-slate-200 text-slate-400 opacity-70';
+                                }
+                            }
+
+                            return `
+                                <button onclick="selectQuizOption(${idx})" ${userAns !== undefined ? 'disabled' : ''} class="btn-touch w-full text-left p-4 sm:p-5 rounded-2xl border-2 font-semibold text-sm sm:text-base transition-all flex items-center gap-4 ${btnClass}">
+                                    <span class="w-10 h-10 rounded-xl ${userAns !== undefined && (idx === currentQ.correctIdx || idx === userAns) ? 'bg-white/20 text-white' : 'bg-white text-navy-900 shadow-sm'} font-extrabold flex items-center justify-center shrink-0">
+                                        ${String.fromCharCode(65 + idx)}
+                                    </span>
+                                    <span>${opt}</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    ${explanationHTML}
+
+                    ${isAllFinished ? `
+                        <div class="bg-gradient-to-r from-navy-900 to-electric-500 text-white p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+                            <div>
+                                <div class="text-gold-400 font-bold text-xs uppercase">Arena Kuis Selesai!</div>
+                                <div class="font-display font-extrabold text-xl">Total Skor Kuis: ${appState.quizScore} / ${total * 10}</div>
+                            </div>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="resetQuiz()" class="btn-touch bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-3 rounded-xl text-sm">
+                                    🔄 Coba Kuis Lagi
+                                </button>
+                                <button onclick="navigateTo('refleksi')" class="btn-touch bg-gold-500 hover:bg-gold-400 text-navy-900 font-extrabold px-5 py-3 rounded-xl text-sm shadow">
+                                    Lanjut ke Refleksi →
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                        <button onclick="changeQuizStep(-1)" ${qIdx === 0 ? 'disabled' : ''} class="btn-touch px-5 py-3 rounded-xl font-bold bg-slate-100 text-slate-700 disabled:opacity-40">
+                            ← Soal Sebelumnya
+                        </button>
+                        ${qIdx < total - 1
+                            ? `<button onclick="changeQuizStep(1)" class="btn-touch px-6 py-3 rounded-xl font-bold bg-electric-500 text-white shadow-sm">Soal Selanjutnya →</button>`
+                            : `<button onclick="navigateTo('refleksi')" class="btn-touch px-6 py-3 rounded-xl font-bold bg-emerald-600 text-white shadow-md">Menuju Halaman Refleksi →</button>`
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        // =================================================================
+        // 10. PENYELESAIAN PETUALANGAN & PODIUM JUARA
+        // =================================================================
+        function finishAdventure() {
+            playTone('fanfare');
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+            }
+            toggleScoreboardModal();
+            showToast('Selamat! Seluruh Misi Warga Negara Telah Selesai!', '🎉');
+        }
+
+        // Inisialisasi awal saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            renderDashboard();
+            renderMateri();
+            renderMisi1();
+            renderMisi2();
+            renderMisi3();
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>
